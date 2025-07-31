@@ -66,10 +66,10 @@ define gui.name_text_font = "PretendardVariable.ttf"
 define gui.interface_text_font = "PretendardVariable.ttf"
 
 ## The size of normal dialogue text.
-define gui.text_size = 33
+define gui.text_size = 28
 
 ## The size of character names.
-define gui.name_text_size = 45
+define gui.name_text_size = 33
 
 ## The size of text in the game's user interface.
 define gui.interface_text_size = 33
@@ -97,7 +97,6 @@ define gui.game_menu_background = "gui/game_menu.png"
 ## a time.
 
 ## The height of the textbox containing dialogue.
-define gui.textbox_height = 278
 
 ## The placement of the textbox vertically on the screen. 0.0 is the top, 0.5
 ## is center, and 1.0 is the bottom.
@@ -106,8 +105,8 @@ define gui.textbox_yalign = 1.0
 
 ## The placement of the speaking character's name, relative to the textbox.
 ## These can be a whole number of pixels from the left or top, or 0.5 to center.
-define gui.name_xpos = 360
-define gui.name_ypos = 0
+define gui.name_xpos = 0.5
+define gui.name_ypos = -60
 
 ## The horizontal alignment of the character's name. This can be 0.0 for left-
 ## aligned, 0.5 for centered, and 1.0 for right-aligned.
@@ -120,7 +119,7 @@ define gui.namebox_height = None
 
 ## The borders of the box containing the character's name, in left, top, right,
 ## bottom order.
-define gui.namebox_borders = Borders(5, 5, 5, 5)
+define gui.namebox_borders = Borders(5, 2, 5, 2)
 
 ## If True, the background of the namebox will be tiled, if False, the
 ## background of the namebox will be scaled.
@@ -130,15 +129,14 @@ define gui.namebox_tile = False
 ## The placement of dialogue relative to the textbox. These can be a whole
 ## number of pixels relative to the left or top side of the textbox, or 0.5 to
 ## center.
-define gui.dialogue_xpos = 402
-define gui.dialogue_ypos = 75
+define gui.dialogue_xpos = 0.5
+define gui.dialogue_ypos = 0.3
 
 ## The maximum width of dialogue text, in pixels.
-define gui.dialogue_width = 1116
-
+define gui.dialogue_width = 680
 ## The horizontal alignment of the dialogue text. This can be 0.0 for left-
 ## aligned, 0.5 for centered, and 1.0 for right-aligned.
-define gui.dialogue_text_xalign = 0.0
+define gui.dialogue_text_xalign = 0.5
 
 
 ## Buttons #####################################################################
@@ -423,58 +421,61 @@ init python:
     ## touch on tablets and phones.
     @gui.variant
     def touch():
-
         gui.quick_button_borders = Borders(60, 21, 60, 0)
 
     ## This changes the size and spacing of various GUI elements to ensure they
     ## are easily visible on phones.
-    @gui.variant
-    def small():
+    # @gui.variant
+    # def small():
+        # ## Font sizes.
+        # gui.text_size = 45
+        # gui.name_text_size = 54
+        # gui.notify_text_size = 38
+        # gui.interface_text_size = 45
+        # gui.button_text_size = 45
+        # gui.label_text_size = 51
 
-        ## Font sizes.
-        gui.text_size = 45
-        gui.name_text_size = 54
-        gui.notify_text_size = 38
-        gui.interface_text_size = 45
-        gui.button_text_size = 45
-        gui.label_text_size = 51
+        # ## Adjust the location of the textbox.
+        # gui.textbox_height = 200
+        # gui.name_xpos = 120
+        # gui.dialogue_xpos = 135
+        # gui.dialogue_width = 1650
 
-        ## Adjust the location of the textbox.
-        gui.textbox_height = 360
-        gui.name_xpos = 120
-        gui.dialogue_xpos = 135
-        gui.dialogue_width = 1650
+        # ## Change the size and spacing of various things.
+        # gui.slider_size = 54
 
-        ## Change the size and spacing of various things.
-        gui.slider_size = 54
+        # gui.choice_button_width = 1860
+        # gui.choice_button_text_size = 45
 
-        gui.choice_button_width = 1860
-        gui.choice_button_text_size = 45
+        # gui.navigation_spacing = 30
+        # gui.pref_button_spacing = 15
 
-        gui.navigation_spacing = 30
-        gui.pref_button_spacing = 15
+        # gui.history_height = 285
+        # gui.history_text_width = 1035
 
-        gui.history_height = 285
-        gui.history_text_width = 1035
+        # gui.quick_button_text_size = 30
 
-        gui.quick_button_text_size = 30
+        # ## File button layout.
+        # gui.file_slot_cols = 2
+        # gui.file_slot_rows = 2
 
-        ## File button layout.
-        gui.file_slot_cols = 2
-        gui.file_slot_rows = 2
+        # ## NVL-mode.
+        # gui.nvl_height = 255
 
-        ## NVL-mode.
-        gui.nvl_height = 255
+        # gui.nvl_name_width = 458
+        # gui.nvl_name_xpos = 488
 
-        gui.nvl_name_width = 458
-        gui.nvl_name_xpos = 488
+        # gui.nvl_text_width = 1373
+        # gui.nvl_text_xpos = 518
+        # gui.nvl_text_ypos = 8
 
-        gui.nvl_text_width = 1373
-        gui.nvl_text_xpos = 518
-        gui.nvl_text_ypos = 8
+        # gui.nvl_thought_width = 1860
+        # gui.nvl_thought_xpos = 30
 
-        gui.nvl_thought_width = 1860
-        gui.nvl_thought_xpos = 30
+        # gui.nvl_button_width = 1860
+        # gui.nvl_button_xpos = 30
 
-        gui.nvl_button_width = 1860
-        gui.nvl_button_xpos = 30
+define gui.textbox_height = 100 # 기본은 240~300 정도
+define gui.textbox_yalign = 0.8 # 맨 아래 정렬
+define gui.text_padding = 24
+define gui.name_xpos = 0.05         # 이름 위치 조정 (왼쪽)

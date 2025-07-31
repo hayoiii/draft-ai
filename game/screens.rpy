@@ -135,7 +135,7 @@ style window:
     yalign gui.textbox_yalign
     ysize gui.textbox_height
 
-    background Image("gui/textbox.png", xalign=0.5, yalign=1.0)
+    background Frame("gui/textbox.png", 0, 20, 0, 20)
 
 style namebox:
     xpos gui.name_xpos
@@ -158,6 +158,10 @@ style say_dialogue:
     xpos gui.dialogue_xpos
     xsize gui.dialogue_width
     ypos gui.dialogue_ypos
+
+    xalign 0.5               # 가운데 정렬
+    xmaximum 720             # 텍스트 최대 폭을 텍스트 박스에 맞춤
+    layout "subtitle"        # 자동 줄바꿈 + 아래로 흐름
 
     adjust_spacing False
 
@@ -1535,10 +1539,14 @@ screen quick_menu():
             textbutton _("Auto") action Preference("auto-forward", "toggle")
             textbutton _("Menu") action ShowMenu()
 
-
 style window:
     variant "small"
     background "gui/phone/textbox.png"
+    xalign 0.5              # 가로 중앙
+    yalign 0.95             # 세로 아래쪽
+    xsize 720               # 폭 좁게
+    xpadding 30
+    ypadding 20
 
 style radio_button:
     variant "small"

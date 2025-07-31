@@ -210,8 +210,3 @@ init python:
 
 define config.screen_width = 720
 define config.screen_height = 1280
-
-define gui.text_size = 28           # 텍스트 크기 약간 키우기
-define gui.name_xpos = 0.05         # 이름 위치 조정 (왼쪽)
-define gui.text_xpos = 0.05         # 대사 위치도 왼쪽에 가깝게
-define gui.window_yalign = 0.85     # 텍스트 창 아래로 더 내리기

@@ -7,8 +7,12 @@ default name_input = ""
 default player_name = "Player"
 default plyaer_hobby = ""
 
+default current_tab = "none"
+default home_action = NullAction()
+default message_action = NullAction()
 label start:
     $ script_label = "start"
+    jump onboarding_home
 
     scene white
     with dissolve
@@ -26,13 +30,25 @@ label start:
     narrator "사실 전부 알고 있는 내용이에요."
     narrator "하지만 당신의 진짜 이름과 다르네요?"
     narrator "장난이에요."
-    jump main
 
-label main:
-    $ script_label = "main"
 
+
+label onboarding_home:
+    $ script_label = "onboarding_home"
+    $ current_tab = "home"
+    $ message_action = Jump("onboarding_message")
+    $ home_action = NullAction()
 
     scene white
-    with fade
+    show screen bottom_nav
+    draft "[player_name], 안녕하세요. DRAFT예요."
 
-    "이건 아래쪽에 뜨는 메시지입니다."
+label onboarding_message:
+    $ script_label = "onboarding_message"
+    $ current_tab = "message"
+    $ message_action = NullAction()
+    $ home_action = NullAction()
+
+    scene white
+    show screen bottom_nav
+    narrator "메시지를 보내는 법을 알려드릴게요."

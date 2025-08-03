@@ -1632,3 +1632,37 @@ style slider_slider:
     xsize 900
 
 
+screen bottom_nav():
+    frame:
+        xalign 0.5
+        yalign 1.0
+        xsize 800
+        ysize 120
+        background "#dddddd"
+        padding (10, 10, 10, 10)
+
+        hbox:
+            spacing 30
+            xalign 0.5
+            yalign 0.5
+
+            # Home (활성)
+            textbutton "🏠 Home":
+                action home_action
+                if current_tab == "home":
+                    text_color gui.accent_color
+
+            # Message (활성)
+            textbutton "💬 Message":
+                action message_action
+                if current_tab == "message":
+                    text_color gui.accent_color
+
+            # Help (비활성)
+            textbutton "❓ Help":
+                action NullAction()
+
+            # News (비활성)
+            textbutton "📰 News":
+                action NullAction()
+

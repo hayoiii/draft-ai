@@ -36,7 +36,7 @@ label start:
 screen wait_for_action(what=None):
     # Define screen elements and their actions
     $ script_label = "wait_for_action"
-    textbutton "Continue" action Return()
+    textbutton "" action Return()
 
     if what:
         frame: 
@@ -48,6 +48,9 @@ screen wait_for_action(what=None):
             background "#f6f6f6"
             text what xalign 0.5 yalign 0.5
 
+screen wait_for_click():
+    add Solid("#00000000", xsize=config.screen_width, ysize=config.screen_height)  # 완전 투명 배경
+    key "mouseup_1" action Return()
 
 label onboarding_home:
     $ script_label = "onboarding_home"
@@ -97,8 +100,8 @@ label onboarding_message:
 
     call screen chat_list(chat_list_data)
 
-$ onboarding_chat_mom_completed = False
-$ onboarding_chat_mom_log = []
+define onboarding_chat_mom_completed = False
+define onboarding_chat_mom_log = []
 label onboarding_chat_mom:
     $ script_label = "onboarding_chat_mom"
     $ current_tab = "chat"
@@ -108,25 +111,28 @@ label onboarding_chat_mom:
     scene white
 
     if onboarding_chat_mom_completed:
-        show screen chat_window(chat_log, chat_character["mom"])
+        show screen chat_window(onboarding_chat_mom_log, chat_character["mom"])
         call screen wait_for_action()
 
-    $ chat_log = [
+    $ onboarding_chat_mom_log = [
         { "from": "me", "text": "나 용돈좀." }, 
         { "from": "mom", "text": "밥은 먹었니?" }, 
         { "from": "mom", "text": "문자는 왜 안 보냈어?" }
     ]
-        
-    menu(is_reply=True):
+    
+    show screen chat_window(onboarding_chat_mom_log, chat_character["mom"], menu_open=True)
+    menu():
         "미안해요, 지금 답장해요!":
-            $ chat_log.append({ "from": "me", "text": "미안해요, 지금 답장해요!" })
+            $ onboarding_chat_mom_log.append({ "from": "me", "text": "미안해요, 지금 답장해요!" })
         "먹었어요! 문자 하려던 참이었어요.":
-            $ chat_log.append({ "from": "me", "text": "먹었어요! 문자 하려던 참이었어요." })
+            $ onboarding_chat_mom_log.append({ "from": "me", "text": "먹었어요! 문자 하려던 참이었어요." })
         "바빴어요...ㅠ":
-            $ chat_log.append({ "from": "me", "text": "바빴어요...ㅠ" })
+            $ onboarding_chat_mom_log.append({ "from": "me", "text": "바빴어요...ㅠ" })
 
-    $ renpy.pause(1.0)
-    $ chat_log.append({ "from": "other", "text": "그래, 알았다." })
+    show screen chat_window(onboarding_chat_mom_log, chat_character["mom"], menu_open=False)
+
+    call screen wait_for_click()
+    $ onboarding_chat_mom_log.append({ "from": "other", "text": "그래, 알았다." })
 
     $ onboarding_chat_mom_completed = True
     call screen wait_for_action()

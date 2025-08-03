@@ -225,21 +225,14 @@ style input:
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#choice
 
-screen choice(items, is_reply=False):
+screen choice(items):
     style_prefix "choice"
     vbox:
         spacing 12
         xalign 0.5
         yalign 1.0
         yoffset -100
-
-        if is_reply:
-            frame:
-                background Solid("#f6f6f6")
-                ysize 100
-                padding (40, 0)
-                xfill True
-                text "Type a reply..."  yalign 0.5 color gui.idle_small_color
+                
         for i in items:
             textbutton i.caption action i.action
 
@@ -1745,7 +1738,7 @@ screen chat_list(chat_items):
                             text chat_character[item["character"]]["name"] size 26 color "#000000"
                             text item["preview"] size 22 color "#666666"
 
-screen chat_window(chat_log, ch):
+screen chat_window(chat_log, ch, menu_open=False):
     tag chat_window
     
     frame:
@@ -1769,6 +1762,8 @@ screen chat_window(chat_log, ch):
                 text ch["name"] size 30 color "#FFF"
                 text "Active 1h ago" size 20 color "#FFF"
 
+
+
     frame:
         ypos 100
         padding (30, 30)
@@ -1788,6 +1783,16 @@ screen chat_window(chat_log, ch):
 
                 for msg in chat_log:
                     use chat_bubble(msg, ch)
+
+    frame:
+        text "Type a reply..." yalign 0.5
+        background Solid("#f6f6f6")
+        xsize config.screen_width
+        ysize 100
+        yalign 1.0
+        padding (40, 0)
+        if menu_open: 
+            yoffset -300
                     
 screen chat_bubble(msg, ch):
     frame:

@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 ## Initialization
 ################################################################################
 
@@ -99,6 +99,12 @@ screen say(who, what):
 
     window:
         id "window"
+        if script_label == "start":
+            xalign 0.5
+            yalign 0.5
+            xsize 500
+            ysize 160
+            background "#f6f6f6"
 
         if who is not None:
 
@@ -110,10 +116,6 @@ screen say(who, what):
         text what id "what"
 
 
-    ## If there's a side image, display it above the text. Do not display on
-    ## the phone variant - there's no room.
-    if not renpy.variant("small"):
-        add SideImage() xalign 0.0 yalign 1.0
 
 
 ## Make the namebox available for styling through the Character object.
@@ -179,8 +181,9 @@ screen input(prompt):
     style_prefix "input"
 
     window:
-
+        style "input_window"
         vbox:
+            spacing 30
             xanchor gui.dialogue_text_xalign
             xpos gui.dialogue_xpos
             xsize gui.dialogue_width
@@ -188,6 +191,13 @@ screen input(prompt):
 
             text prompt style "input_prompt"
             input id "input"
+
+style input_window:
+    xalign 0.5
+    yalign 0.5
+    xsize 500
+    ysize 200
+    background Frame(Solid("#f6f6f6"))  # @TODO: 인풋창 이미지로 변경
 
 style input_prompt is default
 
@@ -198,6 +208,7 @@ style input_prompt:
 style input:
     xalign gui.dialogue_text_xalign
     xmaximum gui.dialogue_width
+    yanchor 0.1
 
 
 ## Choice screen ###############################################################
@@ -1539,14 +1550,6 @@ screen quick_menu():
             textbutton _("Auto") action Preference("auto-forward", "toggle")
             textbutton _("Menu") action ShowMenu()
 
-style window:
-    variant "small"
-    background "gui/phone/textbox.png"
-    xalign 0.5              # 가로 중앙
-    yalign 0.95             # 세로 아래쪽
-    xsize 720               # 폭 좁게
-    xpadding 30
-    ypadding 20
 
 style radio_button:
     variant "small"
@@ -1627,3 +1630,5 @@ style slider_vbox:
 style slider_slider:
     variant "small"
     xsize 900
+
+

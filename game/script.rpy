@@ -14,7 +14,7 @@ default chat_back_action = NullAction()
 
 label start:
     $ script_label = "start"
-    jump onboarding_home
+    jump onboarding_home    # @DEBUG
 
     scene white
     with dissolve
@@ -33,25 +33,11 @@ label start:
     narrator "하지만 당신의 진짜 이름과 다르네요?"
     narrator "장난이에요."
 
-screen wait_for_action(what=None):
-    # Define screen elements and their actions
-    $ script_label = "wait_for_action"
-    textbutton "" action Return()
 
-    if what:
-        frame: 
-            xsize 400
-            ysize gui.textbox_height
-            xalign 0.1
-            yalign gui.textbox_yalign
-            
-            background "#f6f6f6"
-            text what xalign 0.5 yalign 0.5
 
-screen wait_for_click():
-    add Solid("#00000000", xsize=config.screen_width, ysize=config.screen_height)  # 완전 투명 배경
-    key "mouseup_1" action Return()
-
+default onboarding_chat_completed = {
+    "mom": False
+}
 label onboarding_home:
     $ script_label = "onboarding_home"
     $ current_tab = "home"
@@ -61,10 +47,23 @@ label onboarding_home:
     scene white
     show screen draft_at_home
     show screen bottom_nav
+
+    if all(onboarding_chat_completed.values()):
+        draft "모든 메시지를 확인했어요!"
+        hide screen draft_at_home
+        hide screen bottom_nav
+        jump chapter2_home
+
     draft "[player_name], 안녕하세요. DRAFT예요."
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
 
+
+
 define chat_character = {
+    "draft": {
+        "name": "Draft AI",
+        "avatar": "gui/avatar_draft.png"
+    },
     "mom": {
         "name": "엄마",
         "avatar": "gui/avatar_mom.png"
@@ -79,7 +78,7 @@ label onboarding_message:
     $ script_label = "onboarding_message"
     $ current_tab = "message"
     $ message_action = NullAction()
-    $ home_action = NullAction()
+    $ home_action = Jump("onboarding_home")
 
     $ chat_list_data = [
         {
@@ -98,10 +97,13 @@ label onboarding_message:
     hide screen draft_at_home
     show screen bottom_nav
 
-    call screen chat_list(chat_list_data)
+    $ is_completed = all(onboarding_chat_completed.values())
+    call screen chat_list(chat_list_data, wait_for_action=is_completed)
 
-define onboarding_chat_mom_completed = False
-define onboarding_chat_mom_log = []
+    jump onboarding_home
+
+
+default onboarding_chat_mom_log = []
 label onboarding_chat_mom:
     $ script_label = "onboarding_chat_mom"
     $ current_tab = "chat"
@@ -110,7 +112,7 @@ label onboarding_chat_mom:
     hide screen bottom_nav
     scene white
 
-    if onboarding_chat_mom_completed:
+    if onboarding_chat_completed["mom"]:
         show screen chat_window(onboarding_chat_mom_log, chat_character["mom"])
         call screen wait_for_action()
 
@@ -134,5 +136,24 @@ label onboarding_chat_mom:
     call screen wait_for_click()
     $ onboarding_chat_mom_log.append({ "from": "other", "text": "그래, 알았다." })
 
-    $ onboarding_chat_mom_completed = True
+    $ onboarding_chat_completed["mom"] = True
     call screen wait_for_action()
+
+####### Chapter 2
+
+label chapter2_home:
+    $ script_label = "chapter2_home"
+    $ current_tab = "home"
+    $ message_action = Jump("chapter2_message")
+    $ home_action = NullAction()
+    scene white
+    with Fade(0.5, 0, 3.0)
+
+    narrator "Chapter 2. 침범의 시작"
+
+    hide fade_overlay
+    show screen draft_at_home
+    show screen bottom_nav
+    draft "좋은 아침이에요!"
+
+    call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")

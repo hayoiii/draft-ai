@@ -105,19 +105,19 @@ screen say(who, what):
             ysize 160
             background "#f6f6f6"
 
-        else:
+        elif who == "Draft":
             # home에서 DRAFT의 말풍선
             xalign 0.1
             yalign gui.textbox_yalign
             xsize 400
             background "#f6f6f6"
 
-        if who is not None:
+        # if who is not None:
 
-            window:
-                id "namebox"
-                style "namebox"
-                text who id "who"
+        #     window:
+        #         id "namebox"
+        #         style "namebox"
+        #         text who id "who"
 
         text what id "what"
 
@@ -1641,6 +1641,26 @@ style slider_slider:
     variant "small"
     xsize 900
 
+screen wait_for_action(what=None):
+    # Define screen elements and their actions
+    $ script_label = "wait_for_action"
+    textbutton "" action Return()
+
+    if what:
+        frame: 
+            xsize 400
+            ysize gui.textbox_height
+            xalign 0.1
+            yalign gui.textbox_yalign
+            
+            background "#f6f6f6"
+            text what xalign 0.5 yalign 0.5
+
+screen wait_for_click():
+    add Solid("#00000000", xsize=config.screen_width, ysize=config.screen_height)  # 완전 투명 배경
+    key "mouseup_1" action Return()
+
+
 
 screen bottom_nav():
     zorder 100
@@ -1696,13 +1716,13 @@ screen bottom_nav():
                     action NullAction()
 
 screen draft_at_home():
-    tag draft_default
+    tag draft_img
     add "gui/draft_default.png":
         xalign 1.0
         yalign 0.8
 
-screen chat_list(chat_items):
-    tag chat_list
+screen chat_list(chat_items, wait_for_click=False, wait_for_action=False):
+    tag chat_tab
     frame:
         xalign 0.5
         yalign 0.0
@@ -1737,9 +1757,13 @@ screen chat_list(chat_items):
                         vbox:
                             text chat_character[item["character"]]["name"] size 26 color "#000000"
                             text item["preview"] size 22 color "#666666"
+    if wait_for_click:
+        use wait_for_click()
+    if wait_for_action:
+        use wait_for_action()
 
 screen chat_window(chat_log, ch, menu_open=False):
-    tag chat_window
+    tag chat_tab
     
     frame:
         xfill True
@@ -1767,11 +1791,14 @@ screen chat_window(chat_log, ch, menu_open=False):
     frame:
         ypos 100
         padding (30, 30)
-        yfill True
         xsize config.screen_width
         background "#ffffff"
+        if menu_open:
+            ysize config.screen_height - 500
+        else:
+            ysize config.screen_height - 200
 
-        viewport:
+        viewport id "chat_viewport":
             scrollbars None
             draggable False
             mousewheel True

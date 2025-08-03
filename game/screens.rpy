@@ -96,7 +96,6 @@ style frame:
 ## https://www.renpy.org/doc/html/screen_special.html#say
 
 screen say(who, what):
-
     window:
         id "window"
         if script_label == "start":
@@ -104,6 +103,13 @@ screen say(who, what):
             yalign 0.5
             xsize 500
             ysize 160
+            background "#f6f6f6"
+
+        else:
+            # home에서 DRAFT의 말풍선
+            xalign 0.1
+            yalign gui.textbox_yalign
+            xsize 400
             background "#f6f6f6"
 
         if who is not None:
@@ -1636,33 +1642,59 @@ screen bottom_nav():
     frame:
         xalign 0.5
         yalign 1.0
-        xsize 800
         ysize 120
         background "#dddddd"
         padding (10, 10, 10, 10)
 
         hbox:
-            spacing 30
+            spacing 0
+            xfill True
             xalign 0.5
             yalign 0.5
 
+            null width 1
             # Home (활성)
-            textbutton "🏠 Home":
-                action home_action
-                if current_tab == "home":
-                    text_color gui.accent_color
-
-            # Message (활성)
-            textbutton "💬 Message":
-                action message_action
-                if current_tab == "message":
-                    text_color gui.accent_color
-
+            vbox:
+                text "🏠":
+                    xalign 0.5
+                textbutton "Home":
+                    text_size 26
+                    action home_action
+                    if current_tab == "home":
+                        text_color gui.accent_color
+            null width 1
+            vbox:
+                text "✉️":
+                    xalign 0.5
+                textbutton "Message":
+                    text_size 26
+                    action message_action
+                    if current_tab == "message":
+                        text_color gui.accent_color
+                        
+            null width 1
             # Help (비활성)
-            textbutton "❓ Help":
-                action NullAction()
+            vbox:
+                text "❓":
+                    xalign 0.5
+                textbutton "Help":
+                    text_size 26
+                    action NullAction()
 
+            null width 1
             # News (비활성)
-            textbutton "📰 News":
-                action NullAction()
+            vbox:
+                text "📢":
+                    xalign 0.5
+                textbutton "News":
+                    text_size 26
+                    action NullAction()
+
+screen draft_at_home():
+    tag draft_default
+    add "gui/draft_default.png":
+        xalign 1.0
+        yalign 0.8
+
+
 

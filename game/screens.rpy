@@ -225,10 +225,21 @@ style input:
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#choice
 
-screen choice(items):
+screen choice(items, is_reply=False):
     style_prefix "choice"
-
     vbox:
+        spacing 12
+        xalign 0.5
+        yalign 1.0
+        yoffset -100
+
+        if is_reply:
+            frame:
+                background Solid("#f6f6f6")
+                ysize 100
+                padding (40, 0)
+                xfill True
+                text "Type a reply..."  yalign 0.5 color gui.idle_small_color
         for i in items:
             textbutton i.caption action i.action
 
@@ -1639,6 +1650,7 @@ style slider_slider:
 
 
 screen bottom_nav():
+    zorder 100
     frame:
         xalign 0.5
         yalign 1.0
@@ -1696,5 +1708,111 @@ screen draft_at_home():
         xalign 1.0
         yalign 0.8
 
+screen chat_list(chat_items):
+    tag chat_list
+    frame:
+        xalign 0.5
+        yalign 0.0
+        xsize config.screen_width
+        yfill True
+        background "#f6f6f6"
 
+        vbox:
+            spacing 20
+
+            frame:
+                xfill True
+                background gui.accent_color
+                ysize 100
+                text "Messages" size 32 xalign 0.5 yalign 0.5 color "#FFF"
+
+            for item in chat_items:
+                button:
+                    action Jump(item["id"])
+                    background "#ffffff"
+                    hover_background "#e0e0e0"
+                    padding (12, 12)
+                    xfill True
+
+                    hbox:
+                        spacing 16
+
+                        add chat_character[item["character"]]["avatar"]:
+                            xsize 64
+                            ysize 64
+
+                        vbox:
+                            text chat_character[item["character"]]["name"] size 26 color "#000000"
+                            text item["preview"] size 22 color "#666666"
+
+screen chat_window(chat_log, ch):
+    tag chat_window
+    
+    frame:
+        xfill True
+        background gui.accent_color
+        ysize 100
+        padding (20, 20)
+        hbox:
+            spacing 16
+
+            textbutton "<":
+                action chat_back_action
+                text_size 36
+                text_color "#FFF"
+                xsize 50
+
+            add ch["avatar"]:
+                xsize 64
+                ysize 64
+            vbox:
+                text ch["name"] size 30 color "#FFF"
+                text "Active 1h ago" size 20 color "#FFF"
+
+    frame:
+        ypos 100
+        padding (30, 30)
+        yfill True
+        xsize config.screen_width
+        background "#ffffff"
+
+        viewport:
+            scrollbars None
+            draggable False
+            mousewheel True
+
+            vbox:
+                yalign 1.0  # ★ 아래 정렬
+                spacing 16
+                xfill True
+
+                for msg in chat_log:
+                    use chat_bubble(msg, ch)
+                    
+screen chat_bubble(msg, ch):
+    frame:
+        if msg["from"] == "me":
+            xalign 1.0
+        else:
+            xalign 0.0
+        background None
+        hbox:
+            spacing 16
+            if msg["from"] != "me":
+                add ch["avatar"]:
+                    xsize 48
+                    ysize 48
+                    yalign 0.5
+            frame:
+                if msg["from"] == "me":
+                    background gui.accent_color
+                else:
+                    background Solid("#f0f0f0")
+                padding (20, 20)
+                xmaximum 600
+                text msg["text"]:
+                    if msg["from"] == "me":
+                        color "#FFF"
+                    else:
+                        color "#000"
 

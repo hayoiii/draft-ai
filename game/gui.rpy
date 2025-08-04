@@ -57,16 +57,16 @@ define gui.interface_text_color = '#404040'
 ## Fonts and Font Sizes ########################################################
 
 ## The font used for in-game text.
-define gui.text_font = "PretendardVariable.ttf"
+define gui.text_font = "fonts/Pretendard-Medium.ttf"
 
 ## The font used for character names.
-define gui.name_text_font = "PretendardVariable.ttf"
+define gui.name_text_font = "fonts/Pretendard-Medium.ttf"
 
 ## The font used for out-of-game text.
-define gui.interface_text_font = "PretendardVariable.ttf"
+define gui.interface_text_font = "fonts/Pretendard-Medium.ttf"
 
 ## The size of normal dialogue text.
-define gui.text_size = 28
+define gui.text_size = 33
 
 ## The size of character names.
 define gui.name_text_size = 33
@@ -475,7 +475,17 @@ init python:
         # gui.nvl_button_width = 1860
         # gui.nvl_button_xpos = 30
 
-define gui.textbox_height = 100 # 기본은 240~300 정도
+define gui.textbox_height = 180 # 기본은 240~300 정도
 define gui.textbox_yalign = 0.8 # 맨 아래 정렬
 define gui.text_padding = 24
 define gui.name_xpos = 0.05         # 이름 위치 조정 (왼쪽)
+
+
+style fw_bold is default:
+    font "fonts/Pretendard-Bold.ttf"
+
+style fw_semibold is default:
+    font "fonts/Pretendard-SemiBold.ttf"
+
+style fw_thin is default:
+    font "fonts/Pretendard-Regular.ttf"

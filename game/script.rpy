@@ -1,7 +1,9 @@
 ﻿define draft = Character("Draft", what_prefix="", what_suffix="")
 define narrator = Character(None)
 define config.window_hide_transition = dissolve
-image white = Solid("#e6e6e6")
+image white = Solid("#FFFFFF")
+image black = Solid("#000")
+image bg gradient = im.Scale("images/bg_gradient.png", 720, 1600)
 
 default name_input = ""
 default player_name = "Player"
@@ -14,7 +16,7 @@ default chat_back_action = NullAction()
 
 label start:
     $ script_label = "start"
-    jump onboarding_home    # @DEBUG
+    # jump onboarding_home    # @DEBUG
 
     scene white
     with dissolve
@@ -44,15 +46,14 @@ label onboarding_home:
     $ message_action = Jump("onboarding_message")
     $ home_action = NullAction()
 
-    scene white
+    scene bg gradient
     show screen draft_at_home
     show screen bottom_nav
+    show screen home_title
 
     if all(onboarding_chat_completed.values()):
         # 모든 메시지를 확인했으면 chapter2로 넘어간다.
         draft "모든 메시지를 확인했어요!"
-        hide screen draft_at_home
-        hide screen bottom_nav
         jump chapter2
 
     draft "[player_name], 안녕하세요. DRAFT예요."
@@ -142,17 +143,23 @@ label onboarding_chat_mom:
 
 
 ####### Chapter 2
-
+default acheivement_data = {
+    "icon": "gui/avatar_mom.png",
+    "description": "당신의 친구와 커피 약속을 잡았어"
+}
 label chapter2:
     $ script_label = "chapter2"
     $ current_tab = "home"
+
     scene white
     with Fade(0.5, 0, 3.0)
+    scene bg gradient
 
-    narrator "Chapter 2. 침범의 시작"
-
+    show screen acheivement(acheivement_data)
+    show screen home_title
     show screen draft_at_home
     show screen bottom_nav
+
     draft "좋은 아침이에요!"
 
 label chapter2_home:
@@ -160,16 +167,13 @@ label chapter2_home:
     $ current_tab = "home"
     $ message_action = Jump("chapter2_message")
     $ home_action = NullAction()
-    scene white
+    scene bg gradient
 
+    show screen acheivement(acheivement_data)
+    show screen home_title
     show screen draft_at_home
     show screen bottom_nav
 
-    $ acheivement_data = {
-        "icon": "gui/avatar_mom.png",
-        "description": "당신의 친구와 커피 약속을 잡았어"
-    }
-    show screen acheivement(acheivement_data)
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
 
 label chapter2_message:
@@ -192,7 +196,5 @@ label chapter2_message:
     ]
 
     scene white
-    hide screen draft_at_home
-    show screen bottom_nav
 
     call screen chat_list(chat_list_data, wait_for_action=False)

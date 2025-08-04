@@ -97,31 +97,44 @@ style frame:
 
 screen say(who, what):
     window:
-        id "window"
         if script_label == "start":
+            id "window"
             xalign 0.5
             yalign 0.5
-            xsize 500
-            ysize 160
-            background "#f6f6f6"
+            xmaximum 0.8
+            ysize 100
+            background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
+            text what id "what" xalign 0.5 yalign 0.5
+            
 
         elif who == "Draft":
+            id "window"
             # home에서 DRAFT의 말풍선
             xalign 0.1
             yalign gui.textbox_yalign
             xsize 400
-            background "#f6f6f6"
+            padding (30, 0)
+            background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
+            text what id "what" textalign 0.0 yalign 0.5 xalign 0
 
-        # if who is not None:
-
-        #     window:
-        #         id "namebox"
-        #         style "namebox"
-        #         text who id "who"
-
-        text what id "what"
+        else:
+            text what id "what"
 
 
+
+style draft_window is default:
+    # home에서 DRAFT의 말풍선
+    xalign 0.1
+    yalign gui.textbox_yalign
+    ysize gui.textbox_height
+    xsize 400
+    padding (30, 0)
+    background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
+
+style draft_window_text is default:
+    textalign 0.0
+    yalign 0.5
+    xalign 0
 
 
 ## Make the namebox available for styling through the Character object.
@@ -188,32 +201,45 @@ screen input(prompt):
 
     window:
         style "input_window"
+        padding (60, 40)
         vbox:
             spacing 30
             xanchor gui.dialogue_text_xalign
             xpos gui.dialogue_xpos
-            xsize gui.dialogue_width
+            xfill True
             ypos gui.dialogue_ypos
 
             text prompt style "input_prompt"
-            input id "input"
+
+            hbox:
+                xfill True
+                input id "input" xfill True
+
+                button:
+                    add "gui/input_button.png"
+                    xalign 1.0
+                    yoffset -20
+            
+            
 
 style input_window:
     xalign 0.5
     yalign 0.5
-    xsize 500
-    ysize 200
-    background Frame(Solid("#f6f6f6"))  # @TODO: 인풋창 이미지로 변경
+    xsize 0.9
+    ysize 300
+    background Frame("gui/shadow_box.png", 30, 0, 30, 0)
 
 style input_prompt is default
 
 style input_prompt:
     xalign gui.dialogue_text_xalign
     properties gui.text_properties("input_prompt")
+    font "fonts/Pretendard-SemiBold.ttf"
 
 style input:
-    xalign gui.dialogue_text_xalign
+    xalign 0.1
     xmaximum gui.dialogue_width
+    size 36
     yanchor 0.1
 
 
@@ -1648,19 +1674,14 @@ screen wait_for_action(what=None):
 
     if what:
         frame: 
-            xsize 400
-            ysize gui.textbox_height
-            xalign 0.1
-            yalign gui.textbox_yalign
-            
-            background "#f6f6f6"
-            text what xalign 0.5 yalign 0.5
+            style "draft_window"
+            text what style "draft_window_text"
 
 screen wait_for_click():
     add Solid("#00000000", xsize=config.screen_width, ysize=config.screen_height)  # 완전 투명 배경
     key "mouseup_1" action Return()
 
-
+            
 
 screen bottom_nav():
     zorder 100
@@ -1684,6 +1705,7 @@ screen bottom_nav():
                     xalign 0.5
                 textbutton "Home":
                     text_size 26
+                    text_font "fonts/Pretendard-SemiBold.ttf"
                     action home_action
                     if current_tab == "home":
                         text_color gui.accent_color
@@ -1693,6 +1715,7 @@ screen bottom_nav():
                     xalign 0.5
                 textbutton "Message":
                     text_size 26
+                    text_font "fonts/Pretendard-SemiBold.ttf"
                     action message_action
                     if current_tab == "message":
                         text_color gui.accent_color
@@ -1704,6 +1727,7 @@ screen bottom_nav():
                     xalign 0.5
                 textbutton "Help":
                     text_size 26
+                    text_font "fonts/Pretendard-SemiBold.ttf"
                     action NullAction()
 
             null width 1
@@ -1713,7 +1737,24 @@ screen bottom_nav():
                     xalign 0.5
                 textbutton "News":
                     text_size 26
+                    text_font "fonts/Pretendard-SemiBold.ttf"
                     action NullAction()
+
+screen home_title():
+    tag home_title
+    frame:
+        xsize config.screen_width
+        ysize 400
+        background Solid("#AC1754")
+        
+        frame:
+            xfill True
+            background None
+            yalign 1.0
+            padding (40, 40)
+            vbox:
+                text "DRAFT와 함께라면 🫶" size 60 color "#FFFFFF99" style "fw_bold"
+                text "쉽고 재밌는 인간관계" size 60 color "#FFF" style "fw_bold"
 
 screen draft_at_home():
     tag draft_img
@@ -1726,37 +1767,39 @@ screen chat_list(chat_items, wait_for_click=False, wait_for_action=False):
     frame:
         xalign 0.5
         yalign 0.0
-        xsize config.screen_width
+        xfill True
         yfill True
         background "#f6f6f6"
 
         vbox:
-            spacing 20
-
+            spacing 6
             frame:
                 xfill True
                 background gui.accent_color
                 ysize 100
-                text "Messages" size 32 xalign 0.5 yalign 0.5 color "#FFF"
+                text "Messages" size 32 xalign 0.5 yalign 0.5 color "#FFF" style "fw_bold"
 
             for item in chat_items:
                 button:
                     action Jump(item["id"])
                     background "#ffffff"
                     hover_background "#e0e0e0"
-                    padding (12, 12)
+                    padding (40, 40)
                     xfill True
 
                     hbox:
-                        spacing 16
+                        spacing 40
 
                         add chat_character[item["character"]]["avatar"]:
                             xsize 64
                             ysize 64
 
                         vbox:
-                            text chat_character[item["character"]]["name"] size 26 color "#000000"
-                            text item["preview"] size 22 color "#666666"
+                            spacing 0
+                            text chat_character[item["character"]]["name"] size 28 color "#757575"
+                            text item["preview"] size 33 
+
+
     if wait_for_click:
         use wait_for_click()
     if wait_for_action:
@@ -1783,7 +1826,7 @@ screen chat_window(chat_log, ch, menu_open=False):
                 xsize 64
                 ysize 64
             vbox:
-                text ch["name"] size 30 color "#FFF"
+                text ch["name"] size 30 color "#FFF" style "fw_semibold"
                 text "Active 1h ago" size 20 color "#FFF"
 
 
@@ -1812,7 +1855,7 @@ screen chat_window(chat_log, ch, menu_open=False):
                     use chat_bubble(msg, ch)
 
     frame:
-        text "Type a reply..." yalign 0.5
+        text "Type a reply..." color gui.idle_color yalign 0.5 style "fw_thin" size 28
         background Solid("#f6f6f6")
         xsize config.screen_width
         ysize 100
@@ -1854,21 +1897,20 @@ screen acheivement(data):
     frame:
         xalign 0.5
         yalign 0.4
-        xsize 600
-        ysize 200
-        background "#ffffff"
-        padding (40, 40)
+        xsize 0.9
+        ysize 260
+        background Frame("gui/shadow_box.png", 30,0,30,0)
+        padding (60, 60)
 
         vbox:
             spacing 20
 
-            text "DRAFT가 해낸 최근 업적" size 32 color "#000000"
-
+            text "DRAFT가 해낸 최근 업적" size 30 style "fw_semibold" color "#000000"
             hbox:
                 spacing 15
                 add data["icon"]:
                     xsize 64
                     ysize 64
-                text data["description"] size 28 color "#666666" yalign 0.5
+                text data["description"] size 28 color "#3b3b3b" yalign 0.5
                 null width 1
                 text ">" size 48 color gui.accent_color yalign 0.5 

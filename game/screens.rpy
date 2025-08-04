@@ -1848,3 +1848,27 @@ screen chat_bubble(msg, ch):
                     else:
                         color "#000"
 
+
+screen acheivement(data):
+    tag achievement_screen
+    frame:
+        xalign 0.5
+        yalign 0.4
+        xsize 600
+        ysize 200
+        background "#ffffff"
+        padding (40, 40)
+
+        vbox:
+            spacing 20
+
+            text "DRAFT가 해낸 최근 업적" size 32 color "#000000"
+
+            hbox:
+                spacing 15
+                add data["icon"]:
+                    xsize 64
+                    ysize 64
+                text data["description"] size 28 color "#666666" yalign 0.5
+                null width 1
+                text ">" size 48 color gui.accent_color yalign 0.5 

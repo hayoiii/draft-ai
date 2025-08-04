@@ -49,10 +49,11 @@ label onboarding_home:
     show screen bottom_nav
 
     if all(onboarding_chat_completed.values()):
+        # 모든 메시지를 확인했으면 chapter2로 넘어간다.
         draft "모든 메시지를 확인했어요!"
         hide screen draft_at_home
         hide screen bottom_nav
-        jump chapter2_home
+        jump chapter2
 
     draft "[player_name], 안녕하세요. DRAFT예요."
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
@@ -87,7 +88,7 @@ label onboarding_message:
             "preview": "오늘 점심 뭐 먹었니?",
         },
         {
-            "id": "chat_strange",
+            "id": "onboarding_chat_strange",
             "character": "strange",
             "preview": "이 메시지를 본다면 바로 연락해.",
         }
@@ -139,7 +140,20 @@ label onboarding_chat_mom:
     $ onboarding_chat_completed["mom"] = True
     call screen wait_for_action()
 
+
 ####### Chapter 2
+
+label chapter2:
+    $ script_label = "chapter2"
+    $ current_tab = "home"
+    scene white
+    with Fade(0.5, 0, 3.0)
+
+    narrator "Chapter 2. 침범의 시작"
+
+    show screen draft_at_home
+    show screen bottom_nav
+    draft "좋은 아침이에요!"
 
 label chapter2_home:
     $ script_label = "chapter2_home"
@@ -147,13 +161,38 @@ label chapter2_home:
     $ message_action = Jump("chapter2_message")
     $ home_action = NullAction()
     scene white
-    with Fade(0.5, 0, 3.0)
 
-    narrator "Chapter 2. 침범의 시작"
-
-    hide fade_overlay
     show screen draft_at_home
     show screen bottom_nav
-    draft "좋은 아침이에요!"
 
+    $ acheivement_data = {
+        "icon": "gui/avatar_mom.png",
+        "description": "당신의 친구와 커피 약속을 잡았어"
+    }
+    show screen acheivement(acheivement_data)
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
+
+label chapter2_message:
+    $ script_label = "chapter2_message"
+    $ current_tab = "message"
+    $ message_action = NullAction()
+    $ home_action = Jump("chapter2_home")
+
+    $ chat_list_data = [
+        {
+            "id": "chapter2_chat_strange",
+            "character": "strange",
+            "preview": "이 메시지를 본다면 바로 연락해.",
+        },
+        {
+            "id": "chapter2_chat_mom",
+            "character": "mom",
+            "preview": "오늘 점심 뭐 먹었니?",
+        }
+    ]
+
+    scene white
+    hide screen draft_at_home
+    show screen bottom_nav
+
+    call screen chat_list(chat_list_data, wait_for_action=False)

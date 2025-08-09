@@ -1864,7 +1864,9 @@ screen chat_window(chat_log, ch, menu_open=False):
         else:
             ysize config.screen_height - 200
 
-        viewport id "chat_viewport":
+        viewport:
+            id "chat_vp"
+            yinitial 1.0
             scrollbars None
             draggable False
             mousewheel True
@@ -1876,6 +1878,10 @@ screen chat_window(chat_log, ch, menu_open=False):
 
                 for msg in chat_log:
                     use chat_bubble(msg, ch)
+                
+                frame: # 하단 여백
+                    background None
+                    ysize 30
 
     frame:
         text "Type a reply..." color gui.idle_color yalign 0.5 style "fw_thin" size 28
@@ -1904,6 +1910,8 @@ screen chat_bubble(msg, ch):
             frame:
                 if msg["from"] == "me":
                     background gui.accent_color
+                elif msg["from"] == "draft":
+                    background Solid("#ffe3ef")
                 else:
                     background Solid("#f0f0f0")
                 padding (20, 20)

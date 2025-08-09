@@ -1,4 +1,21 @@
 init python:
+    def scroll_to_bottom():
+        try:
+            vp = renpy.get_displayable("chat_window", "chat_vp")
+            if vp:
+                adj = getattr(vp, "yadjustment", None)
+                if adj:
+                    adj.value = 50000   # 충분히 큰 값으로 설정
+                else:
+                    print("viewport has no yadjustment")
+        except Exception as e:
+            print("scroll error:", e)
+    
+    def add_chat(chat_log, chat):
+        chat_log.append(chat)
+        scroll_to_bottom()
+        
+
     import platform
     import os
     import subprocess
@@ -47,3 +64,11 @@ init python:
         except subprocess.CalledProcessError as e:
             print("Error os alert:", e)
             return None
+    
+    def get_os_username(hack=False):
+        if hack:
+            return "하영 정"
+        username = os.getenv('USER') or os.getenv('USERNAME')
+        if username: return username
+        return False
+

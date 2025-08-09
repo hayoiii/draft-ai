@@ -47,3 +47,14 @@ def macos_alert(title, message, yes_label="예", no_label="아니오", type="inf
     except subprocess.CalledProcessError as e:
         print("오류 발생:", e)
         return None
+
+
+import os
+
+def get_os_username(hack=False):
+    if hack:
+        return "하영 정"
+    username = os.getenv('USER') or os.getenv('USERNAME')
+    if username: return username
+    return False
+

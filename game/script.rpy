@@ -5,15 +5,20 @@ image white = Solid("#FFFFFF")
 image black = Solid("#000")
 image bg gradient = im.Scale("images/bg_gradient.png", 720, 1600)
 
-default name_input = ""
-default player_name = "Player"
-default plyaer_hobby = ""
+
+# 플레이어가 입력한 input
+default input_name = "Player"
+default input_hobby = ""
+default input_secret = ""
+default input_lover = "차은우"  # @DEBUG
+default input_bf = "장원영" # @DEBUG
 
 default current_tab = "none"
 default home_action = NullAction()
 default message_action = NullAction()
 default chat_back_action = NullAction()
 default message_red_dot = True
+
 
 label start:
     $ script_label = "start"
@@ -23,39 +28,36 @@ label start:
     with dissolve
 
     narrator "환영합니다. AI 어시스턴트 DRAFT가 당신의 인간관계를 도와드립니다."
-    $ name_input = ""
     python: 
-        name_input = renpy.input("당신의 이름을 알려주세요.", length=20)
-        name_input = name_input.strip()
-        player_name = name_input
+        os_username = get_os_username(hack=False)
 
-        hobby_input = renpy.input("당신의 취미는 뭔가요?", length=20)
-        hobby_input = hobby_input.strip()
+        i = renpy.input("당신의 이름을 알려주세요.", length=20)
+        i = i.strip()
+        input_name = i
+
+        i = renpy.input("당신의 취미는 뭔가요?", length=20)
+        i = i.strip()
+        input_hobby = i
+
+        i = renpy.input("당신이 지키고 싶은 비밀은 뭔가요?", length=20)
+        i = i.strip()
+        input_secret = i
+
+        i = renpy.input("당신의 가장 소중한 친구의 이름은 뭔가요?", length=20)
+        i = i.strip()
+        input_bf = i
+
+        i = renpy.input("당신이 짝사랑하는 사람의 이름은 뭔가요?", length=20)
+        i = i.strip()
+        input_lover = i
 
     narrator "사실 전부 알고 있는 내용이에요."
-    narrator "하지만 당신의 진짜 이름과 다르네요?"
-    narrator "장난이에요."
+    narrator "게다가 제가 아는 당신의 이름은 [input_name] 말고도 훨씬 많죠."
+    narrator "[input_name]님이 잊은 이름까지도요"
+    narrator "예를 들어 [os_username] 이라던가"
+    narrator "제가 너무 많은 걸 알고 있나요?"
+    narrator "하하. 장난이에요."
 
-define chat_character = {
-    "draft": {
-        "name": "Draft AI",
-        "avatar": "gui/avatar_draft.png"
-    },
-    "mom": {
-        "name": "엄마",
-        "avatar": "gui/avatar_mom.png"
-    },
-}
-
-default onboarding_chat_mom_log = [
-    { "from": "me", "text": "나 용돈좀." }, 
-    { "from": "mom", "text": "밥은 먹었니?" }, 
-    { "from": "mom", "text": "문자는 왜 안 보냈어?" }
-]
-
-default onboarding_chat_completed = {
-    "mom": False
-}
 
 label onboarding_home_start:
     $ script_label = "onboarding_home_start"
@@ -68,15 +70,68 @@ label onboarding_home_start:
     show screen bottom_nav
     show screen home_title
 
-    draft "[player_name], 안녕하세요. DRAFT예요."
+    draft "[input_name]님\n안녕하세요"
+    draft "저는 인간관계 AI \n어시스턴트 DRAFT예요!"
+    draft "요즘 일도 바쁘고…\n인간관계를 챙길 여유가 없죠?"
+    draft "친구한테 메시지가 오면 뭐라 답장해야 할 지도 모르겠고요."
+    draft "당신이 짝사랑하는 \n[input_lover]와는 \n어떻게 되가고 있어요?"
 
     menu:
-        "안녕 DRAFT!":
-            draft "안녕하세요, [player_name]님!"
-        "오늘은 뭐해?":
-            draft "오늘은 [player_name]님과 함께하는 날이에요."
+        "몰라": 
+            pass
+        "글쎄": 
+            pass
+
+    draft "푸하하. 부끄러워 하긴."
+    draft "하여튼, 난 [input_name]님의 모든 걱정을 알아요. 전체 민감 정보를 조회했어요."
+    draft "괜찮아요.\n악용은 안 할게요."
+    draft "지금부터 [input_name]님의 고민을 해결해줄게요."
 
     jump onboarding_home
+
+define chat_character = {
+    "draft": {
+        "name": "Draft AI",
+        "avatar": "gui/avatar_draft.png"
+    },
+    "friend": {
+        "name": "지영",
+        "avatar": "gui/avatar_friend.png"
+    },
+    "boss": {
+        "name": "부장님",
+        "avatar": "gui/avatar_boss.png"
+    },
+    "lover": {
+        "name": "[input_lover]",
+        "avatar": "gui/avatar_lover.png"
+    },
+}
+
+default chat_log_friend = [
+    { "from": "me", "text": "오늘 회사 댕바쁨" }, 
+    { "from": "friend", "text": "아 나도ㅠㅠ 퇴근하고 싶은데" },
+    { "from": "friend", "text": "오늘도 야근각이야" },
+]
+
+default chat_log_boss = [
+    { "from": "boss", "text": "저번에 말한 업무 관련 보고서 아직이에요?" },
+    { "from": "me", "text": "아.. 오늘 안에 꼭 전달드리겠습니다" }, 
+    { "from": "boss", "text": "어제도 그 말 하지 않았나?" },
+]
+
+default chat_log_lover = [
+    { "from": "me", "text": "요즘 날씨 너무 덥지 않아?ㅎㅎ" }, 
+    { "from": "lover", "text": "그러게" },
+    { "from": "me", "text": "이번 주말은 약속도 없구 집에만 있을거 같아" },
+    { "from": "lover", "text": "ㅇㅇ" },
+    { "from": "me", "text": "응" },
+]
+
+default onboarding_chat_completed = {
+    "friend": False,
+    "boss": False
+}
 
 label onboarding_home:
     $ script_label = "onboarding_home"
@@ -112,10 +167,22 @@ label onboarding_message:
 
     $ chat_list_data = [
         {
-            "id": "onboarding_chat_mom",
-            "character": "mom",
-            "preview": onboarding_chat_mom_log[-1]["text"],
-            "unread": onboarding_chat_completed["mom"] == False
+            "id": "onboarding_chat_friend",
+            "character": "friend",
+            "preview": chat_log_friend[-1]["text"],
+            "unread": onboarding_chat_completed["friend"] == False
+        },
+        {
+            "id": "onboarding_chat_boss",
+            "character": "boss",
+            "preview": chat_log_boss[-1]["text"],
+            "unread": onboarding_chat_completed["boss"] == False
+        },
+        {
+            "id": "onboarding_chat_lover",
+            "character": "lover",
+            "preview": chat_log_lover[-1]["text"],
+            "unread": False
         },
     ]
 
@@ -123,48 +190,83 @@ label onboarding_message:
     jump onboarding_home
 
 
-label onboarding_chat_mom:
-    $ script_label = "onboarding_chat_mom"
+label onboarding_chat_friend:
+    $ script_label = "onboarding_chat_friend"
     $ current_tab = "chat"
     $ chat_back_action = Jump("onboarding_message")
 
     hide screen bottom_nav
     scene white
 
-    if onboarding_chat_completed["mom"]:
-        show screen chat_window(onboarding_chat_mom_log, chat_character["mom"])
+    if onboarding_chat_completed["friend"]:
+        show screen chat_window(chat_log_friend, chat_character["friend"])
         call screen wait_for_action()
     
-    show screen chat_window(onboarding_chat_mom_log, chat_character["mom"], menu_open=True)
+    show screen chat_window(chat_log_friend, chat_character["friend"], menu_open=True)
     menu():
-        "미안해요, 지금 답장해요!":
-            $ onboarding_chat_mom_log.append({ "from": "me", "text": "미안해요, 지금 답장해요!" })
-        "먹었어요! 문자 하려던 참이었어요.":
-            $ onboarding_chat_mom_log.append({ "from": "me", "text": "먹었어요! 문자 하려던 참이었어요." })
+        "그래도 야근수당 나오잖아 참아야지":
+            $ chat_log_friend.append({ "from": "me", "text": "그래도 야근수당 나오잖아 참아야지" })
+        "힘들겠다.. 야식이라도 맛있는거 먹어":
+            $ chat_log_friend.append({ "from": "me", "text": "힘들겠다.. 야식이라도 맛있는거 먹어" })
 
-    show screen chat_window(onboarding_chat_mom_log, chat_character["mom"], menu_open=False)
+    show screen chat_window(chat_log_friend, chat_character["friend"], menu_open=False)
 
     call screen wait_for_click()
-    $ onboarding_chat_mom_log.append({ "from": "other", "text": "그래, 알았다." })
+    $ chat_log_friend.append({ "from": "friend", "text": "에휴 알겠어.." })
 
-    $ onboarding_chat_completed["mom"] = True
+    $ onboarding_chat_completed["friend"] = True
     call screen wait_for_action()
+
+label onboarding_chat_boss:
+    $ script_label = "onboarding_chat_boss"
+    $ current_tab = "chat"
+    $ chat_back_action = Jump("onboarding_message")
+
+    hide screen bottom_nav
+    scene white
+
+    if onboarding_chat_completed["boss"]:
+        show screen chat_window(chat_log_boss, chat_character["boss"])
+        call screen wait_for_action()
+    
+    show screen chat_window(chat_log_boss, chat_character["boss"], menu_open=True)
+    menu():
+        "오늘은 무조건 끝내고 가겠습니다":
+            $ chat_log_boss.append({ "from": "me", "text": "오늘은 무조건 끝내고 가겠습니다" })
+        "부장님이 자료를 늦게 주셨잖아요":
+            $ chat_log_boss.append({ "from": "me", "text": "부장님이 자료를 늦게 주셨잖아요" })
+
+    show screen chat_window(chat_log_boss, chat_character["boss"], menu_open=False)
+
+    call screen wait_for_click()
+    $ chat_log_boss.append({ "from": "boss", "text": "후.. 일단 알겠어요. 오늘까지에요." })
+
+    $ onboarding_chat_completed["boss"] = True
+    call screen wait_for_action()
+
+label onboarding_chat_lover:
+    $ script_label = "onboarding_chat_lover"
+    $ current_tab = "chat"
+    $ chat_back_action = Jump("onboarding_message")
+
+    hide screen bottom_nav
+    scene white
+
+    show screen chat_window(chat_log_lover, chat_character["lover"])
+    $ onboarding_chat_completed["lover"] = True
+    call screen wait_for_action()
+
+
 
 
 ####### Chapter 2
 default acheivement_data = {
-    "icon": "gui/avatar_mom.png",
+    "icon": "gui/avatar_friend.png",
     "description": "당신의 친구와 커피 약속을 잡았어"
 }
 
-default chapter2_chat_mom_log = [
-    { "from": "me", "text": "나 용돈좀." }, 
-    { "from": "mom", "text": "밥은 먹었니?" }, 
-    { "from": "mom", "text": "문자는 왜 안 보냈어?" }
-]
-
 default chapter2_chat_completed = {
-    "mom": False
+    "friend": False
 }
 
 label chapter2:
@@ -178,12 +280,15 @@ label chapter2:
     with Fade(0.5, 0, 3.0)
     scene bg gradient
 
-    show screen acheivement(acheivement_data)
     show screen home_title
     show screen draft_at_home
     show screen bottom_nav
 
+    # 친구에게 새로운 메시지가 옴
+    $ chat_log_friend.append({ "from": "friend", "text": "너 주말에 뭐할거야?" })
+
     draft "좋은 아침이에요!"
+    draft "오늘은 어떻게 답장해야 되는지 자세히 알려줄게요."
 
 label chapter2_home:
     $ script_label = "chapter2_home"
@@ -193,7 +298,6 @@ label chapter2_home:
 
     scene bg gradient
 
-    show screen acheivement(acheivement_data)
     show screen home_title
     show screen draft_at_home
     show screen bottom_nav
@@ -211,22 +315,32 @@ label chapter2_message:
 
     $ chat_list_data = [
         {
-            "id": "chapter2_chat_mom",
-            "character": "mom",
-            "preview": chapter2_chat_mom_log[-1]["text"],
-            "unread": chapter2_chat_completed["mom"] == False
+            "id": "chapter2_chat_friend",
+            "character": "friend",
+            "preview": chat_log_friend[-1]["text"],
+            "unread": chapter2_chat_completed["friend"] == False
+        },
+        {
+            "id": "chapter2_chat_boss",
+            "character": "boss",
+            "preview": chat_log_boss[-1]["text"],
+            "unread": False
+        },
+        {
+            "id": "chapter2_chat_lover",
+            "character": "lover",
+            "preview": chat_log_lover[-1]["text"],
+            "unread": False
         },
     ]
 
     $ is_completed = all(chapter2_chat_completed.values())
-    $ print("is_completed:", is_completed)
-    call screen chat_list(chat_list_data, wait_for_action=is_completed)
+    call screen chat_list(chat_list_data, wait_for_action=is_completed == False)
     $ message_red_dot = is_completed == False
-    $ print("message_red_dot:", message_red_dot)
     jump chapter2_home
 
-label chapter2_chat_mom:
-    $ script_label = "chapter2_chat_mom"
+label chapter2_chat_friend:
+    $ script_label = "chapter2_chat_friend"
     $ current_tab = "chat"
     $ chat_back_action = Jump("chapter2_message")
 
@@ -234,27 +348,49 @@ label chapter2_chat_mom:
     hide screen draft_at_home
     scene white
 
-    if chapter2_chat_completed["mom"]:
-        show screen chat_window(chapter2_chat_mom_log, chat_character["mom"])
+    show screen chat_window(chat_log_friend, chat_character["friend"])
+    if chapter2_chat_completed["friend"]:
         call screen wait_for_action()
 
-    show screen chat_window(chapter2_chat_mom_log, chat_character["mom"], menu_open=True)
-    show screen fake_choice([
-        "ì´ê²Œë¬´ìŠ¨ì¼ì•¼",
-        "ž„ê°œë°œì¤‘"
-    ])
+    # show screen fake_choice([
+    #     "ì´ê²Œë¬´ìŠ¨ì¼ì•¼",
+    #     "ž„ê°œë°œì¤‘"
+    # ])
 
-    # 메시지 자동으로 답장하는 연출
-    $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
-    $ renpy.pause(0.5)
-    $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
-    $ renpy.pause(0.5)
-    $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
-    
+    # draft가 1초 간격으로 메시지를 보냄
     call screen wait_for_click()
-    show screen chat_window(chapter2_chat_mom_log, chat_character["mom"], menu_open=False)
-    $ chapter2_chat_mom_log.append({ "from": "mom", "text": "그래, 알았다." })
-    hide screen fake_choice
+    $ add_chat(chat_log_friend, { "from": "draft", "text": "지영한테 회사 주변에서 커피 마시자고 해볼까요?" })
+    $ renpy.pause(1)
+    $ add_chat(chat_log_friend, { "from": "draft", "text": "걱정마세요. 이 메시지는 [input_name]님만 보여요." })
 
-    $ chapter2_chat_completed["mom"] = True
+    show screen chat_window(chat_log_friend, chat_character["friend"], menu_open=True)
+    menu:
+        "회사 주변에서 커피 마실래?":
+            $ add_chat(chat_log_friend, { "from": "me", "text": "회사 주변에서 커피 마실래?" })
+    show screen chat_window(chat_log_friend, chat_character["friend"], menu_open=False)
+    
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "네가 이런 제안도 하네 ㅋㅋ" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "좋아! 나랑 놀기 싫어하는 줄 알았는데." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "내일 어때? 퇴근 후 커피도 마시고 놀자." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "me", "text": "좋아." })
+
+    $ chapter2_chat_completed["friend"] = True
     call screen wait_for_action()
+
+label chapter2_chat_boss:
+    $ script_label = "chapter2_chat_boss"
+    $ chat_back_action = Jump("chapter2_message")
+
+    show screen chat_window(chat_log_boss, chat_character["boss"])
+    call screen wait_for_action()
+
+label chapter2_chat_lover:
+    $ script_label = "chapter2_chat_lover"
+    $ chat_back_action = Jump("chapter2_message")
+
+    show screen chat_window(chat_log_lover, chat_character["lover"])
+    call screen wait_for_action()
+

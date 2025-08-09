@@ -89,7 +89,9 @@ label onboarding_home:
     show screen bottom_nav
     show screen home_title
 
-    if all(onboarding_chat_completed.values()):
+    $ is_completed = all(onboarding_chat_completed.values())
+    $ message_red_dot = is_completed == False
+    if is_completed:
         # 모든 메시지를 확인했으면 chapter2로 넘어간다.
         draft "모든 메시지를 확인했어요!"
         jump chapter2

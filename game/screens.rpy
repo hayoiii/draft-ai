@@ -1781,6 +1781,18 @@ screen draft_at_home():
         xalign 1.0
         yalign 0.8
 
+screen draft_at_chat():
+    zorder 500
+    tag draft_img
+    add "gui/draft_rotated.png":
+        xsize 950
+        ysize 950
+        yalign 1.0
+        xalign 1.0
+        yoffset 280
+        xoffset 120
+
+
 screen chat_list(chat_items, wait_for_click=False, wait_for_action=False):
     tag chat_tab
     frame:
@@ -1923,7 +1935,7 @@ screen chat_bubble(msg, ch):
                         color "#000"
 
 
-screen acheivement(data):
+screen acheivement(data, is_active=False):
     tag achievement_screen
     frame:
         xalign 0.5
@@ -1934,7 +1946,10 @@ screen acheivement(data):
         padding (60, 60)
 
         button:
-            action Jump(data["jump"])
+            if is_active:
+                action Jump(data["jump"])
+            else:
+                action NullAction()
             vbox:
                 spacing 20
 
@@ -1952,14 +1967,6 @@ screen fake_choice(captions):
     style_prefix "choice"
     zorder 300  # 항상 위
 
-    # 화면 전체 딤 (클릭 무시)
-    button:
-        xsize config.screen_width
-        ysize config.screen_height
-        background Solid("#00000000")  # 반투명 검은색
-        action NullAction()
-        focus_mask True
-
     vbox:
         yalign 1.0
         yoffset -100
@@ -1968,4 +1975,4 @@ screen fake_choice(captions):
                 # 기존 choice 버튼 스타일 완벽 복제
                 background Frame("gui/button/choice_idle_background.png", gui.choice_button_borders, tile=gui.choice_button_tile)
                 hover_background Frame("gui/button/choice_hover_background.png", gui.choice_button_borders, tile=gui.choice_button_tile)
-                action NullAction()
+                action Return()

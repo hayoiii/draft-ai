@@ -496,13 +496,21 @@ label chapter2_2:
         { "from": "me", "text": "너 진짜 좋아해ㅜㅜ" },
     ]
 
-    $ chat_log_friend.append({ "from": "friend", "text": "응? 갑자기?" })
-    $ chat_log_friend.append({ "from": "boss", "text": "[input_name]씨가 보낸거 맞아요?" })
+    $ chat_log_friend = [
+        { "from": "draft", "text": "제 빅데이터에 의하면 누군가를 같이 험담하면 쉽게 가까워질 수 있다고 해요!" },
+        
+        { "from": "me", "text": "지영아 내 친구중에 [input_bf] 알지" },
+        { "from": "me", "text": "얘 나한테 자격지심 엄청 심해. 그리고 자꾸 귀찮게 굴어서 짜증나 죽겠어" },
+        { "from": "me", "text": "난 얘보다 너가 훨씬 더 좋아" },
+
+        { "from": "friend", "text": "...응? 갑자기?" },
+    ]
 
     draft "[input_name]님이 없는 동안\n제가 열심히 답장했어요"
     draft "고맙다는 말은 안 해도 돼요."
     draft "이게 제 즐거움이니까."
 
+    show screen acheivement(acheivement_data, is_active=True)
     call screen wait_for_action("제가 해낸 업적을 확인해보세요!")
 
 label chapter2_2_home:
@@ -517,9 +525,14 @@ label chapter2_2_home:
     show screen home_title
     show screen draft_at_home
     show screen bottom_nav
-    show screen acheivement(acheivement_data)
+    show screen acheivement(acheivement_data, is_active=True)
 
-    draft "chapter2_2_home"
+    $ is_completed = all(chapter2_2_chat_completed.values())
+    if is_completed:
+        $ message_red_dot = is_completed == False
+        draft "모든 메시지를 확인했어요!"
+        jump chapter3
+    call screen wait_for_action("아직 확인해야 할 메시지가 남아있어요.")
 
 label chapter2_2_message:
     scene white
@@ -532,7 +545,7 @@ label chapter2_2_message:
     
     $ chat_list_data = [
         {
-            "id": "chapter2_chat_friend",
+            "id": "chapter2_2_chat_friend",
             "character": "friend",
             "preview": chat_log_friend[-1]["text"],
             "unread": chapter2_2_chat_completed["friend"] == False
@@ -595,3 +608,52 @@ label chapter2_2_chat_lover:
     
     $ chapter2_2_chat_completed["lover"] = True
     call screen wait_for_action()
+
+label chapter2_2_chat_friend:
+    $ script_label = "chapter2_2_chat_friend"
+    $ current_tab = "chat"
+    $ chat_back_action = Jump("chapter2_2_message")
+    hide screen bottom_nav
+    hide screen draft_at_home
+    scene white
+
+    if chapter2_2_chat_completed["friend"]:
+        show screen chat_window(chat_log_friend, chat_character["friend"])
+        call screen wait_for_action()
+
+    show screen chat_window(chat_log_friend, chat_character["friend"], True)
+    menu:
+        "이거 내가 보낸거 아니야 무시해":
+            pass
+        "내 폰이 이상해 저거 나 아니야":
+            pass
+    show screen fake_choice([
+        "이거 내가 보낸거 아니야 무시해",
+        "내 폰이 이상해 저거 나 아니야",
+    ])
+    show screen draft_at_chat
+    $ add_chat(chat_log_friend, { "from": "draft", "text": "[input_name]님. 제 데이터를 믿어봐요. 이게 정답이라니까요?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "me", "text": "너도 [input_bf] 짜증나지? 내가 더 좋지?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "너희 둘이 싸웠어?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "me", "text": "왜 내 말에 대답 안 해?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "오늘 너 좀 이상한 것 같아" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "왜그래.." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "me", "text": "뭐가?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "장난치는거지..?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "me", "text": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅌㅋㅌㅌㅌㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ" })
+    $ add_chat(chat_log_friend, { "from": "me", "text": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅌㅌㅋㅋㅌㅌㅋㅋㅌㅋㅋ" })
+    $ add_chat(chat_log_friend, { "from": "me", "text": "장난 아닌데" })
+    hide screen draft_at_chat
+    show screen chat_window(chat_log_friend, chat_character["friend"])
+    hide screen fake_choice
+
+    $ chapter2_2_chat_completed["friend"] = True
+    call screen wait_for_action() 

@@ -260,13 +260,9 @@ label onboarding_chat_lover:
 
 
 ####### Chapter 2
-default acheivement_data = {
-    "icon": "gui/avatar_friend.png",
-    "description": "당신의 친구와 커피 약속을 잡았어"
-}
-
 default chapter2_chat_completed = {
-    "friend": False
+    "friend": False,
+    "lover": False,
 }
 
 label chapter2:
@@ -302,8 +298,15 @@ label chapter2_home:
     show screen draft_at_home
     show screen bottom_nav
 
+    $ is_completed = all(chapter2_chat_completed.values())
+    if is_completed:
+        $ message_red_dot = is_completed == False
+        draft "모든 메시지를 확인했어요!"
+        jump chapter2_2
+
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
 
+default chapter2_lover_step = False
 label chapter2_message:
     scene white
     $ script_label = "chapter2_message"
@@ -312,6 +315,12 @@ label chapter2_message:
     $ home_action = Jump("chapter2_home")
     show screen bottom_nav
     hide screen draft_at_home
+    
+    python:
+        # friend와의 chat이 완료되면 lover에게 메시지가 오고, lover step이 시작
+        if chapter2_chat_completed["friend"] and chapter2_lover_step == False and chapter2_chat_completed["lover"] == False:
+            chat_log_lover.append({ "from": "lover", "text": "오늘 저녁에 만날래?" })
+            chapter2_lover_step = True
 
     $ chat_list_data = [
         {
@@ -327,17 +336,17 @@ label chapter2_message:
             "unread": False
         },
         {
-            "id": "chapter2_chat_lover",
+            "id": "chapter2_chat_lover_step" if chapter2_lover_step else "chapter2_chat_lover",
             "character": "lover",
             "preview": chat_log_lover[-1]["text"],
-            "unread": False
+            "unread": chapter2_chat_completed["lover"] == False and chapter2_lover_step == True
         },
     ]
 
     $ is_completed = all(chapter2_chat_completed.values())
-    call screen chat_list(chat_list_data, wait_for_action=is_completed == False)
-    $ message_red_dot = is_completed == False
-    jump chapter2_home
+    if is_completed:
+        $ message_red_dot = is_completed == False
+    call screen chat_list(chat_list_data, wait_for_action=True)
 
 label chapter2_chat_friend:
     $ script_label = "chapter2_chat_friend"
@@ -373,10 +382,14 @@ label chapter2_chat_friend:
     call screen wait_for_click()
     $ add_chat(chat_log_friend, { "from": "friend", "text": "좋아! 나랑 놀기 싫어하는 줄 알았는데." })
     call screen wait_for_click()
-    $ add_chat(chat_log_friend, { "from": "friend", "text": "내일 어때? 퇴근 후 커피도 마시고 놀자." })
+    $ add_chat(chat_log_friend, { "from": "friend", "text": "오늘 저녁 어때? 퇴근 후 커피도 마시고 놀자." })
     call screen wait_for_click()
     $ add_chat(chat_log_friend, { "from": "me", "text": "좋아." })
 
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "draft", "text": "좋아요! 친구와의 약속을 잡았어요." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_friend, { "from": "draft", "text": "이제 [input_name]님의 친구와 관계가 더 좋아질 거예요." })
     $ chapter2_chat_completed["friend"] = True
     call screen wait_for_action()
 
@@ -394,3 +407,87 @@ label chapter2_chat_lover:
     show screen chat_window(chat_log_lover, chat_character["lover"])
     call screen wait_for_action()
 
+label chapter2_chat_lover_step_menu:
+    menu:
+        "응 당연하지 어디서 만날까?":
+            $ add_chat(chat_log_lover, { "from": "draft", "text": "약속이 있어서 안된다고 하세요." })
+            jump chapter2_chat_lover_step_menu  # 두 번째 선택지 클릭할 때까지 반복
+        
+        "미안. 나 오늘 저녁에 지영이랑 약속있어.":
+            $ add_chat(chat_log_lover, { "from": "me", "text": "미안. 나 오늘 저녁에 지영이랑 약속있어." })
+            return
+
+label chapter2_chat_lover_step:
+    $ script_label = "chapter2_chat_lover_step"
+    $ chat_back_action = Jump("chapter2_message")
+    hide screen bottom_nav
+    hide screen draft_at_home
+    scene white
+
+    show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=True)
+    # lover에게 "오늘 저녁에 만날래?"라는 메시지가 와있다.
+
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "오늘은 지영과의 선약이 있어요." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "약속이 있어서 안된다고 하세요." })
+    
+    call chapter2_chat_lover_step_menu
+    show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=False)
+
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "그래? 저번엔 그렇게 만나자고 하더니" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "그럼 내일은?" })
+    
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "자꾸 제 계획에 없던 약속을 잡으려 하네요?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "그냥 제가 답장할게요." })
+
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "me", "text": "갑작스러운 약속은 어려워. 다음주 월요일 저녁 8시 13분은 어때?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "??? 넌 원래 분 단위로 일정 세워?" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "뭐.. 일단 알겠어 그때 봐." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "잘했어요! [input_name]님의 짝사랑이 곧 이루어질 것 같아요" })
+    
+    $ chapter2_chat_completed["lover"] = True
+    call screen wait_for_action()
+
+
+
+####### Chapter 2-2
+default acheivement_data = {
+    "icon": "gui/avatar_lover.png",
+    "description": "[input_lover]에게 돌발 고백 했어요! "
+}
+
+default chapter2_2_chat_completed = {
+    "friend": False,
+    "lover": False,
+}
+
+label chapter2_2:
+    $ script_label = "chapter2_2"
+    $ current_tab = "home"
+    $ message_action = NullAction()
+    $ home_action = NullAction()
+    $ message_red_dot = True
+
+    scene white
+    with Fade(0.5, 0, 3.0)
+    scene bg gradient
+
+    show screen home_title
+    show screen draft_at_home
+    show screen bottom_nav
+    show screen acheivement(acheivement_data)
+
+    $ chat_log_friend.append({ "from": "friend", "text": "응? 갑자기?" })
+    $ chat_log_friend.append({ "from": "boss", "text": "[input_name]씨가 보낸거 맞아요?" })
+
+    draft "[input_name]님이 없는 동안\n제가 열심히 답장했어요"
+    draft "고맙다는 말은 안 해도 돼요."
+    draft "이게 제 즐거움이니까."

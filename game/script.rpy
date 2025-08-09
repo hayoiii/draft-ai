@@ -105,6 +105,8 @@ label onboarding_message:
     scene white
     hide screen draft_at_home
     show screen bottom_nav
+    $ is_completed = all(onboarding_chat_completed.values())
+    $ message_red_dot = is_completed == False
 
     $ chat_list_data = [
         {
@@ -115,10 +117,7 @@ label onboarding_message:
         },
     ]
 
-    $ is_completed = all(onboarding_chat_completed.values())
-    $ message_red_dot = is_completed != True
     call screen chat_list(chat_list_data, wait_for_action=is_completed)
-
     jump onboarding_home
 
 
@@ -205,6 +204,8 @@ label chapter2_message:
     $ current_tab = "message"
     $ message_action = NullAction()
     $ home_action = Jump("chapter2_home")
+    show screen bottom_nav
+    hide screen draft_at_home
 
     $ chat_list_data = [
         {
@@ -215,10 +216,12 @@ label chapter2_message:
         },
     ]
 
-    $ is_completed = all(chpater2_chat_completed.values())
-    $ message_red_dot = is_completed != True
-
+    $ is_completed = all(chapter2_chat_completed.values())
+    $ print("is_completed:", is_completed)
     call screen chat_list(chat_list_data, wait_for_action=is_completed)
+    $ message_red_dot = is_completed == False
+    $ print("message_red_dot:", message_red_dot)
+    jump chapter2_home
 
 label chapter2_chat_mom:
     $ script_label = "chapter2_chat_mom"
@@ -234,15 +237,22 @@ label chapter2_chat_mom:
         call screen wait_for_action()
 
     show screen chat_window(chapter2_chat_mom_log, chat_character["mom"], menu_open=True)
+    show screen fake_choice([
+        "ì´ê²Œë¬´ìŠ¨ì¼ì•¼",
+        "ž„ê°œë°œì¤‘"
+    ])
+
     # 메시지 자동으로 답장하는 연출
     $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
     $ renpy.pause(0.5)
     $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
     $ renpy.pause(0.5)
     $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
+    
     call screen wait_for_click()
     show screen chat_window(chapter2_chat_mom_log, chat_character["mom"], menu_open=False)
     $ chapter2_chat_mom_log.append({ "from": "mom", "text": "그래, 알았다." })
+    hide screen fake_choice
 
     $ chapter2_chat_completed["mom"] = True
     call screen wait_for_action()

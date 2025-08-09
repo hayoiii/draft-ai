@@ -262,14 +262,13 @@ screen choice(items):
             action NullAction() # 클릭 무시
             focus_mask True # 클릭 범위 지정
     vbox:
-        spacing 20
         xalign 0.5
         if "home" in script_label:
             yalign 0.5
+            yoffset 0
         else:
             yalign 1.0
             yoffset -100
-                
         for i in items:
             textbutton i.caption action i.action
 
@@ -1938,3 +1937,25 @@ screen acheivement(data):
                 text data["description"] size 28 color "#3b3b3b" yalign 0.5
                 null width 1
                 text ">" size 48 color gui.accent_color yalign 0.5 
+
+screen fake_choice(captions):
+    style_prefix "choice"
+    zorder 300  # 항상 위
+
+    # 화면 전체 딤 (클릭 무시)
+    button:
+        xsize config.screen_width
+        ysize config.screen_height
+        background Solid("#00000000")  # 반투명 검은색
+        action NullAction()
+        focus_mask True
+
+    vbox:
+        yalign 1.0
+        yoffset -100
+        for caption in captions:
+            textbutton caption:
+                # 기존 choice 버튼 스타일 완벽 복제
+                background Frame("gui/button/choice_idle_background.png", gui.choice_button_borders, tile=gui.choice_button_tile)
+                hover_background Frame("gui/button/choice_hover_background.png", gui.choice_button_borders, tile=gui.choice_button_tile)
+                action NullAction()

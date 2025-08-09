@@ -22,7 +22,7 @@ default message_red_dot = True
 
 label start:
     $ script_label = "start"
-    jump onboarding_home    # @DEBUG
+    jump chapter2_2    # @DEBUG
 
     scene white
     with dissolve
@@ -319,6 +319,7 @@ label chapter2_message:
     python:
         # friend와의 chat이 완료되면 lover에게 메시지가 오고, lover step이 시작
         if chapter2_chat_completed["friend"] and chapter2_lover_step == False and chapter2_chat_completed["lover"] == False:
+            chat_log_lover.append({ "from": "lover", "text": "너 저번에 빌려간 거 오늘 줘." })
             chat_log_lover.append({ "from": "lover", "text": "오늘 저녁에 만날래?" })
             chapter2_lover_step = True
 
@@ -409,12 +410,12 @@ label chapter2_chat_lover:
 
 label chapter2_chat_lover_step_menu:
     menu:
-        "응 당연하지 어디서 만날까?":
+        "응 당연하지 어디서 볼까?":
             $ add_chat(chat_log_lover, { "from": "draft", "text": "약속이 있어서 안된다고 하세요." })
             jump chapter2_chat_lover_step_menu  # 두 번째 선택지 클릭할 때까지 반복
         
-        "미안. 나 오늘 저녁에 지영이랑 약속있어.":
-            $ add_chat(chat_log_lover, { "from": "me", "text": "미안. 나 오늘 저녁에 지영이랑 약속있어." })
+        "미안. 나 오늘 저녁에 선약이 있어.":
+            $ add_chat(chat_log_lover, { "from": "me", "text": "미안. 나 오늘 저녁에 선약이 있어." })
             return
 
 label chapter2_chat_lover_step:
@@ -435,7 +436,7 @@ label chapter2_chat_lover_step:
     show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=False)
 
     call screen wait_for_click()
-    $ add_chat(chat_log_lover, { "from": "lover", "text": "그래? 저번엔 그렇게 만나자고 하더니" })
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "나 그거 빨리 받아야하는데.." })
     call screen wait_for_click()
     $ add_chat(chat_log_lover, { "from": "lover", "text": "그럼 내일은?" })
     
@@ -459,16 +460,18 @@ label chapter2_chat_lover_step:
 
 
 ####### Chapter 2-2
-default acheivement_data = {
-    "icon": "gui/avatar_lover.png",
-    "description": "[input_lover]에게 돌발 고백 했어요! "
-}
 
 default chapter2_2_chat_completed = {
     "friend": False,
     "lover": False,
+    "boss": False,
 }
 
+default acheivement_data = {
+    "icon": "gui/avatar_lover.png",
+    "description": "[input_lover]에게 돌발 고백 했어요!",
+    "jump": "chapter2_2_chat_lover",
+}
 label chapter2_2:
     $ script_label = "chapter2_2"
     $ current_tab = "home"
@@ -485,9 +488,110 @@ label chapter2_2:
     show screen bottom_nav
     show screen acheivement(acheivement_data)
 
+    $ chat_log_lover = [
+        { "from": "draft", "text": "박력 넘치는 돌직구 고백은 성공률이 59.2%에요!"},
+        { "from": "draft", "text": "시간 끈다고 좋을 건 하나도 없죠"},
+
+        { "from": "me", "text": "나랑 사귀자" },
+        { "from": "me", "text": "너 진짜 좋아해ㅜㅜ" },
+    ]
+
     $ chat_log_friend.append({ "from": "friend", "text": "응? 갑자기?" })
     $ chat_log_friend.append({ "from": "boss", "text": "[input_name]씨가 보낸거 맞아요?" })
 
     draft "[input_name]님이 없는 동안\n제가 열심히 답장했어요"
     draft "고맙다는 말은 안 해도 돼요."
     draft "이게 제 즐거움이니까."
+
+    call screen wait_for_action("제가 해낸 업적을 확인해보세요!")
+
+label chapter2_2_home:
+    $ script_label = "chapter2_2_home"
+    $ current_tab = "home"
+    $ message_action = Jump("chapter2_2_message")
+    $ home_action = NullAction()
+
+    scene white
+    scene bg gradient
+
+    show screen home_title
+    show screen draft_at_home
+    show screen bottom_nav
+    show screen acheivement(acheivement_data)
+
+    draft "chapter2_2_home"
+
+label chapter2_2_message:
+    scene white
+    $ script_label = "chapter2_2_message"
+    $ current_tab = "message"
+    $ message_action = NullAction()
+    $ home_action = Jump("chapter2_2_home")
+    show screen bottom_nav
+    hide screen draft_at_home
+    
+    $ chat_list_data = [
+        {
+            "id": "chapter2_chat_friend",
+            "character": "friend",
+            "preview": chat_log_friend[-1]["text"],
+            "unread": chapter2_2_chat_completed["friend"] == False
+        },
+        {
+            "id": "chapter2_chat_boss",
+            "character": "boss",
+            "preview": chat_log_boss[-1]["text"],
+            "unread": chapter2_2_chat_completed["boss"] == False
+        },
+        {
+            "id": "chapter2_2_chat_lover",
+            "character": "lover",
+            "preview": chat_log_lover[-1]["text"],
+            "unread": chapter2_2_chat_completed["lover"] == False
+        },
+    ]
+
+    call screen chat_list(chat_list_data, wait_for_action=True)
+
+
+label chapter2_2_chat_lover:
+    $ script_label = "chapter2_2_chat_lover"
+    $ chat_back_action = Jump("chapter2_2_message")
+    hide screen bottom_nav
+    hide screen draft_at_home
+    scene white
+
+    show screen chat_window(chat_log_lover, chat_character["lover"])
+    if chapter2_2_chat_completed["lover"]:
+        call screen wait_for_action()
+
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "난아닌뎀ㅎ" })
+
+    show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=True)
+    menu:
+        "내가 그렇게 싫어?":
+            $ add_chat(chat_log_lover, { "from": "me", "text": "내가 그렇게 싫어?" })
+    show screen chat_window(chat_log_lover, chat_character["lover"])
+
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "웅" })
+
+    show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=True)
+    menu:
+        "못생겨서?":
+            $ add_chat(chat_log_lover, { "from": "me", "text": "못생겨서?" })
+    show screen chat_window(chat_log_lover, chat_character["lover"])
+
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "웅" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "그리고 성격두" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "lover", "text": "짱시룸" })
+
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "하하 이건 저도 어쩔 수 없네요 ㅎㅎ" })
+    call screen wait_for_click()
+    $ add_chat(chat_log_lover, { "from": "draft", "text": "힘내세요! 다른 인간 관계는 제가 끈끈히 만들고 있으니까" })
+    
+    $ chapter2_2_chat_completed["lover"] = True
+    call screen wait_for_action()

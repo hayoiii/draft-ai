@@ -1933,18 +1933,20 @@ screen acheivement(data):
         background Frame("gui/shadow_box.png", 30,0,30,0)
         padding (60, 60)
 
-        vbox:
-            spacing 20
+        button:
+            action Jump(data["jump"])
+            vbox:
+                spacing 20
 
-            text "DRAFT가 해낸 최근 업적" size 30 style "fw_semibold" color "#000000"
-            hbox:
-                spacing 15
-                add data["icon"]:
-                    xsize 64
-                    ysize 64
-                text data["description"] size 28 color "#3b3b3b" yalign 0.5
-                null width 1
-                text ">" size 48 color gui.accent_color yalign 0.5 
+                text "DRAFT가 해낸 최근 업적" size 30 style "fw_semibold" color "#000000"
+                hbox:
+                    spacing 15
+                    add data["icon"]:
+                        xsize 64
+                        ysize 64
+                    text data["description"] size 28 color "#3b3b3b" yalign 0.5
+                    null width 1
+                    text ">" size 48 color gui.accent_color yalign 0.5 
 
 screen fake_choice(captions):
     style_prefix "choice"

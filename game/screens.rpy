@@ -253,11 +253,22 @@ style input:
 
 screen choice(items):
     style_prefix "choice"
+    zorder 300   # bottom_nav(200)보다 높게 설정
+    if "home" in script_label:
+        button:
+            xsize config.screen_width
+            ysize config.screen_height
+            background Solid("#00000080")
+            action NullAction() # 클릭 무시
+            focus_mask True # 클릭 범위 지정
     vbox:
-        spacing 12
+        spacing 20
         xalign 0.5
-        yalign 1.0
-        yoffset -100
+        if "home" in script_label:
+            yalign 0.5
+        else:
+            yalign 1.0
+            yoffset -100
                 
         for i in items:
             textbutton i.caption action i.action
@@ -275,6 +286,7 @@ style choice_vbox:
     spacing gui.choice_spacing
 
 style choice_button is default:
+    xalign 0.5
     properties gui.button_properties("choice_button")
 
 style choice_button_text is default:

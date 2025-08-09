@@ -57,6 +57,27 @@ default onboarding_chat_completed = {
     "mom": False
 }
 
+label onboarding_home_start:
+    $ script_label = "onboarding_home_start"
+    $ current_tab = "home"
+    $ message_action = Jump("onboarding_message")
+    $ home_action = NullAction()
+
+    scene bg gradient
+    show screen draft_at_home
+    show screen bottom_nav
+    show screen home_title
+
+    draft "[player_name], 안녕하세요. DRAFT예요."
+
+    menu:
+        "안녕 DRAFT!":
+            draft "안녕하세요, [player_name]님!"
+        "오늘은 뭐해?":
+            draft "오늘은 [player_name]님과 함께하는 날이에요."
+
+    jump onboarding_home
+
 label onboarding_home:
     $ script_label = "onboarding_home"
     $ current_tab = "home"
@@ -73,10 +94,7 @@ label onboarding_home:
         draft "모든 메시지를 확인했어요!"
         jump chapter2
 
-    draft "[player_name], 안녕하세요. DRAFT예요."
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
-
-
 
 label onboarding_message:
     $ script_label = "onboarding_message"
@@ -122,8 +140,6 @@ label onboarding_chat_mom:
             $ onboarding_chat_mom_log.append({ "from": "me", "text": "미안해요, 지금 답장해요!" })
         "먹었어요! 문자 하려던 참이었어요.":
             $ onboarding_chat_mom_log.append({ "from": "me", "text": "먹었어요! 문자 하려던 참이었어요." })
-        "바빴어요...ㅠ":
-            $ onboarding_chat_mom_log.append({ "from": "me", "text": "바빴어요...ㅠ" })
 
     show screen chat_window(onboarding_chat_mom_log, chat_character["mom"], menu_open=False)
 
@@ -139,6 +155,17 @@ default acheivement_data = {
     "icon": "gui/avatar_mom.png",
     "description": "당신의 친구와 커피 약속을 잡았어"
 }
+
+default chapter2_chat_mom_log = [
+    { "from": "me", "text": "나 용돈좀." }, 
+    { "from": "mom", "text": "밥은 먹었니?" }, 
+    { "from": "mom", "text": "문자는 왜 안 보냈어?" }
+]
+
+default chapter2_chat_completed = {
+    "mom": False
+}
+
 label chapter2:
     $ script_label = "chapter2"
     $ current_tab = "home"
@@ -173,6 +200,7 @@ label chapter2_home:
     call screen wait_for_action("새로운 메시지가 있어요. Message 탭을 확인해보세요.")
 
 label chapter2_message:
+    scene white
     $ script_label = "chapter2_message"
     $ current_tab = "message"
     $ message_action = NullAction()
@@ -182,12 +210,39 @@ label chapter2_message:
         {
             "id": "chapter2_chat_mom",
             "character": "mom",
-            "preview": "오늘 점심 뭐 먹었니?",
-            "unread": True
-        }
+            "preview": chapter2_chat_mom_log[-1]["text"],
+            "unread": chapter2_chat_completed["mom"] == False
+        },
     ]
-    # is completed 확인    
-    # red dot
+
+    $ is_completed = all(chpater2_chat_completed.values())
+    $ message_red_dot = is_completed != True
+
+    call screen chat_list(chat_list_data, wait_for_action=is_completed)
+
+label chapter2_chat_mom:
+    $ script_label = "chapter2_chat_mom"
+    $ current_tab = "chat"
+    $ chat_back_action = Jump("chapter2_message")
+
+    hide screen bottom_nav
+    hide screen draft_at_home
     scene white
 
-    call screen chat_list(chat_list_data, wait_for_action=False)
+    if chapter2_chat_completed["mom"]:
+        show screen chat_window(chapter2_chat_mom_log, chat_character["mom"])
+        call screen wait_for_action()
+
+    show screen chat_window(chapter2_chat_mom_log, chat_character["mom"], menu_open=True)
+    # 메시지 자동으로 답장하는 연출
+    $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
+    $ renpy.pause(0.5)
+    $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
+    $ renpy.pause(0.5)
+    $ chapter2_chat_mom_log.append({ "from": "me", "text": "이건 DRAFT가 보낸 답장" })
+    call screen wait_for_click()
+    show screen chat_window(chapter2_chat_mom_log, chat_character["mom"], menu_open=False)
+    $ chapter2_chat_mom_log.append({ "from": "mom", "text": "그래, 알았다." })
+
+    $ chapter2_chat_completed["mom"] = True
+    call screen wait_for_action()

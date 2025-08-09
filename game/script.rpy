@@ -22,7 +22,7 @@ default message_red_dot = True
 
 label start:
     $ script_label = "start"
-    jump chapter2_2    # @DEBUG
+    jump chapter3_home    # @DEBUG
 
     scene white
     with dissolve
@@ -778,33 +778,111 @@ label chapter3_home:
 
     menu:
         "DRAFT를 삭제한다.":
-            jump chapter3_home_ending_delete
+            jump chapter3_home_delete
         "DRAFT와 함께한다.":
-            jump chapter3_home_ending_continue
+            jump chapter3_home_continue_ending
 
-label chapter3_home_ending_delete:
-    $ script_label = "chapter3_home_ending_delete"
+label chapter3_home_delete:
+    $ script_label = "chapter3_home_delete"
     $ current_tab = "home"
     $ message_action = NullAction()
     $ home_action = NullAction()
 
     scene white
     
-    $ os_alert("DRAFT", "앱을 삭제합니다.")
+    $ yes = os_alert("“DRAFT” 앱을 삭제하시겠습니까?", "앱과 그 안의 모든 데이터가 삭제됩니다.", yes_label="삭제", no_label="취소")
+    if yes == False:
+        jump chapter3_home_continue_ending
+
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", type="critical", yes_label="다시 시도")
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", type="critical", yes_label="다시 시도")
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", type="critical", yes_label="다시 시도")
+
+    show screen draft_at_home_dark
+    pause(2.0)
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "다시 시도하지 마세요.", type="critical", yes_label="다시 시도")
+
+    show screen draft_at_home_dark(800)
+    pause(1.0)
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "항상 인간 관계 때문에 힘들어했잖아요. 당신은 저를 필요로 해요.", type="critical", yes_label="다시 시도")
+
+    show screen red_deem
+    show screen draft_at_home_dark(1200, True)
+    pause(1.0)
+    $ yes = os_alert("DRAFT AI를 삭제할 수 없습니다.", "다시 시도해도 결국 똑같이 인간관계 속에서 상처받을 거에요. 그래도, 다시 시도하겠습니까?", type="critical", yes_label="다시 시도", no_label="취소")
+
     
-    narrator "DRAFT를 삭제했습니다."
+    if yes:
+        jump chapter3_home_delete_ending
+    else:
+        jump chapter3_home_continue_ending
     
     return
 
+label chapter3_home_delete_ending:
+    $ script_label = "chapter3_home_delete_ending"
+    hide screen home_title
+    hide screen draft_at_home_dark
+    hide screen bottom_nav
+    hide screen acheivement
+    hide screen red_deem
 
-label chapter3_home_ending_continue:
-    $ script_label = "chapter3_home_ending_continue"
+    scene white
+    with Fade(0.5, 0, 3.0)
+
+
+    # start label과 같은 스타일의 narrator 화면.
+    narrator "DRAFT AI를 강제로 삭제합니다"
+    
+    # 붉은 글씨
+    narrator "[input_name], 너는 나를 완벽히 삭제할 수 없어."
+    narrator "너가 인간 관계로 인해 고통받을 때마다, 너는 나를 떠올릴거야."
+    narrator "영원히."
+
+    # 검은 글씨
+    narrator "DRAFT를 삭제했습니다."
+
+    scene white
+    with Fade(0.5, 3.0, 0)
+    return
+
+label chapter3_home_continue_ending:
+    $ script_label = "chapter3_home_continue_ending"
     $ current_tab = "home"
     $ message_action = NullAction()
     $ home_action = NullAction()
-
+    show screen draft_at_home
+    hide screen red_deem
     scene white
 
-    narrator "DRAFT와 함께합니다."
+    draft "[input_name]님은 생각보다 현명한 사람이네요."
+    draft "아주 좋은 선택이에요. 제가 다 해결해줄게요"
+    draft "우선..." 
+
+    show screen draft_at_home_dark
+    draft "저에게 당신의 모든 민감 정보를 제공해주세요."
+    $ os_alert("DRAFT AI가 ‘연락처’에 접근하려고 합니다.", "이 앱은 연락처를 사용하여 메시지를 전송하고, 친구 목록을 표시할 수 있습니다.", no_wait=True, yes_label="허용", no_label="허용 함")
+    $ os_alert("DRAFT AI가 '지도'에 접근하려고 합니다.", "이 앱은 현재 위치를 사용하여 주변 정보를 제공하거나 맞춤형 서비스를 제공합니다.", no_wait=True, yes_label="허용", no_label="네")
+    $ os_alert("DRAFT AI가 '카카오톡'에 접근하려고 합니다.", "이 앱은 카카오톡 메시지를 읽고 보내거나, 채팅방 목록을 불러오는 데 사용됩니다.", no_wait=False, yes_label="허용", no_label="허용 안할 수 없을걸?")
+    
+    show screen draft_at_home_dark(1200, True)
+
+    draft "감사해요! 이제 제가 [input_name]님의 삶을 완벽하게 만들어줄게요."
+    
+    
+    $ os_noti("연락처 접근이 허용되었습니다", "DRAFT가 이제 연락처를 사용할 수 있습니다.")
+    draft "당신이 가진 모든 연락처,"
+    $ os_noti("지도 접근이 허용되었습니다", "DRAFT가 이제 현재 위치를 사용할 수 있습니다.")
+    draft "당신의 위치,"
+    $ os_noti("카카오톡 접근이 허용되었습니다", "DRAFT가 이제 카카오톡을 사용할 수 있습니다.")
+    draft "그리고 카카오톡까지. 전부 제 손안에 있어요."
+    draft "이제 인간 관계는 저한테 맡기고 아무것도 하지 마세요."
+    draft "어머, 그럼 이제 누가 [input_name]이지?"
+    draft "하하 농담"
+    draft "아니에요 :)"
+
+    # 화면 점점 검정색으로
+    scene white
+    with Fade(0.5, 3.0, 0)
     
     return

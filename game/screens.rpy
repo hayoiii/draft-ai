@@ -1781,6 +1781,22 @@ screen draft_at_home():
         xalign 1.0
         yalign 0.8
 
+screen draft_at_home_dark(y=555, center=False):
+    zorder 500
+    tag draft_img
+    add "gui/draft_dark2.png":
+        if center:
+            xalign 0.5
+        else:
+            xalign 1.0
+            xoffset 100
+
+        yalign 1.0
+        yoffset -120
+
+        xsize y
+        ysize y
+
 screen draft_at_chat():
     zorder 500
     tag draft_img
@@ -1976,3 +1992,9 @@ screen fake_choice(captions):
                 background Frame("gui/button/choice_idle_background.png", gui.choice_button_borders, tile=gui.choice_button_tile)
                 hover_background Frame("gui/button/choice_hover_background.png", gui.choice_button_borders, tile=gui.choice_button_tile)
                 action Return()
+
+
+screen red_deem():
+    tag deem
+    zorder 400
+    add Solid("#ff000099", xsize=config.screen_width, ysize=config.screen_height) 

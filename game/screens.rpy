@@ -96,29 +96,37 @@ style frame:
 ## https://www.renpy.org/doc/html/screen_special.html#say
 
 screen say(who, what):
+    zorder 600
+
     window:
-        if script_label == "start":
+        if script_label == "start" or script_label == "chapter3_home_delete_ending":
             id "window"
             xalign 0.5
             yalign 0.5
             xmaximum 0.8
             ysize 120
             background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
-            text what id "what" xalign 0.5 yalign 0.5
+            if who == "Draft":
+                text what id "what" xalign 0.5 yalign 0.5 color "#FF0000" style "fw_bold"
+            else:
+                text what id "what" xalign 0.5 yalign 0.5
             
 
-        elif who == "Draft":
+        elif who == "Draft" and script_label != "chapter3_home_continue_ending":
             id "window"
             # home에서 DRAFT의 말풍선
             xalign 0.1
             yalign gui.textbox_yalign
-            xsize 400
+            xsize 500
             padding (20, 0)
             background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
             text what id "what" textalign 0.0 yalign 0.5 xalign 0
 
+        elif who == "Draft" and script_label == "chapter3_home_continue_ending":
+            # 기본 말풍선 사용
+            text what id "what" color "#FF0000" style "fw_bold" yalign 0.5
         else:
-            text what id "what"
+            text what id "what" yalign 0.5
 
 
 
@@ -233,6 +241,7 @@ style input_prompt is default
 
 style input_prompt:
     xalign gui.dialogue_text_xalign
+    yoffset -40
     properties gui.text_properties("input_prompt")
     font "fonts/Pretendard-SemiBold.ttf"
 
@@ -1776,6 +1785,7 @@ screen home_title():
                 text "쉽고 재밌는 인간관계" size 60 color "#FFF" style "fw_bold"
 
 screen draft_at_home():
+    zorder 100
     tag draft_img
     add "gui/draft_default.png":
         xalign 1.0

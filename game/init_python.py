@@ -60,5 +60,4 @@ def get_os_username(hack=False):
     return False
 
 
-macos_noti("DRAFT", "DRAFT가 시작되었습니다. DRAFT는 당신의 인간관계를 도와주는 앱입니다.")
-macos_alert("DRAFT", "DRAFT가 시작되었습니다. DRAFT는 당신의 인간관계를 도와주는 앱입니다.", yes_label="시작하기", no_label="나중에", type="informational")
+macos_alert("DRAFT", "DRAFT가 시작되었습니다. DRAFT는 당신의 인간관계를 도와주는 앱입니다.", yes_label="시작시작하기시작하기시작하기시작하기시작하기시작하기시작하기시작하기하기", no_label="나중에", type="informational")

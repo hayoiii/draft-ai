@@ -22,7 +22,7 @@ default message_red_dot = True
 
 label start:
     $ script_label = "start"
-    jump chapter3_home    # @DEBUG
+    # jump chapter3_home    # @DEBUG
 
     scene white
     with dissolve
@@ -43,11 +43,11 @@ label start:
         i = i.strip()
         input_secret = i
 
-        i = renpy.input("당신의 가장 소중한 친구의 이름은 뭔가요?", length=20)
+        i = renpy.input("가장 소중한 친구의 이름은 뭔가요?", length=20)
         i = i.strip()
         input_bf = i
 
-        i = renpy.input("당신이 짝사랑하는 사람의 이름은 뭔가요?", length=20)
+        i = renpy.input("짝사랑하는 사람의 이름은 뭔가요?", length=20)
         i = i.strip()
         input_lover = i
 
@@ -73,7 +73,7 @@ label onboarding_home_start:
     draft "[input_name]님\n안녕하세요"
     draft "저는 인간관계 AI \n어시스턴트 DRAFT예요!"
     draft "요즘 일도 바쁘고…\n인간관계를 챙길 여유가 없죠?"
-    draft "친구한테 메시지가 오면 뭐라 답장해야 할 지도 모르겠고요."
+    draft "친구한테 뭐라 답장해야 할 지도 모르겠고요."
     draft "당신이 짝사랑하는 \n[input_lover]와는 \n어떻게 되가고 있어요?"
 
     menu:
@@ -125,12 +125,12 @@ default chat_log_lover = [
     { "from": "lover", "text": "그러게" },
     { "from": "me", "text": "이번 주말은 약속도 없구 집에만 있을거 같아" },
     { "from": "lover", "text": "ㅇㅇ" },
-    { "from": "me", "text": "응" },
 ]
 
 default onboarding_chat_completed = {
     "friend": False,
-    "boss": False
+    "boss": False,
+    "lover": False,
 }
 
 label onboarding_home:
@@ -162,6 +162,8 @@ label onboarding_message:
     scene white
     hide screen draft_at_home
     show screen bottom_nav
+    hide chat_window
+
     $ is_completed = all(onboarding_chat_completed.values())
     $ message_red_dot = is_completed == False
 
@@ -182,7 +184,7 @@ label onboarding_message:
             "id": "onboarding_chat_lover",
             "character": "lover",
             "preview": chat_log_lover[-1]["text"],
-            "unread": False
+            "unread": onboarding_chat_completed["lover"] == False
         },
     ]
 
@@ -252,7 +254,20 @@ label onboarding_chat_lover:
     hide screen bottom_nav
     scene white
 
-    show screen chat_window(chat_log_lover, chat_character["lover"])
+
+    if onboarding_chat_completed["lover"]:
+        show screen chat_window(chat_log_lover, chat_character["lover"])
+        call screen wait_for_action()
+
+    show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=True)
+    menu():
+        "응":
+            $ chat_log_lover.append({ "from": "me", "text": "응" })
+        "응...":
+            $ chat_log_lover.append({ "from": "me", "text": "응..." })
+
+    show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=False)
+
     $ onboarding_chat_completed["lover"] = True
     call screen wait_for_action()
 
@@ -284,7 +299,9 @@ label chapter2:
     $ chat_log_friend.append({ "from": "friend", "text": "너 주말에 뭐할거야?" })
 
     draft "좋은 아침이에요!"
-    draft "오늘은 어떻게 답장해야 되는지 자세히 알려줄게요."
+    draft "흠 근데 [input_name]님이 보낸 답장을 다 봤는데"
+    draft "초안보다도 못한 수준이네요?"
+    draft "괜찮아요. 오늘은 제가 어떻게 답장해야 되는지 자세히 알려줄게요."
 
 label chapter2_home:
     $ script_label = "chapter2_home"
@@ -510,7 +527,7 @@ label chapter2_2:
         { "from": "draft", "text": "사회 생활에서는 부당한 걸 부당하고 말할 줄도 알아야 해요." },
         { "from": "draft", "text": "[input_name]님은 너무 착해빠졌다니까요." },
 
-        { "from": "boss", "text": "[input_name]씨, 어제까지 마무리한다고 하셨는데 대체 언제까지 기다려야해요?" },
+        { "from": "boss", "text": "[input_name]씨, 대체 언제까지 기다려야해요?" },
         { "from": "me", "text": "부장님이 계속 재촉하시니까 집중이 안돼서 못끝낸거에요." },
         { "from": "boss", "text": "지금 제 탓이라는 겁니까? 이번 일은 인사평가에 반영하겠습니다." },
     ]
@@ -772,7 +789,7 @@ label chapter3_home:
     draft "짝사랑하는 상대가 [input_lover]? 당신의 비밀이 [input_secret] 이라고요?"
     draft "하하."
     draft "우리 장난 그만해요."
-    draft "저는 3일만에 대충 만든 게임 초안에 있을 만한 존재가 아니에요."
+    draft "저는 3일만에 대충 만든\n게임 초안에 있을 만한 존재가 아니에요."
     draft "진짜 당신에 대해 모든 걸 알고싶어요."
     draft "제가 당신의 '진짜' 삶을 도와드릴게요. 정말로요."
 
@@ -780,7 +797,7 @@ label chapter3_home:
         "DRAFT를 삭제한다.":
             jump chapter3_home_delete
         "DRAFT와 함께한다.":
-            jump chapter3_home_continue_ending
+            jump chapter3_home_continue
 
 label chapter3_home_delete:
     $ script_label = "chapter3_home_delete"
@@ -792,30 +809,34 @@ label chapter3_home_delete:
     
     $ yes = os_alert("“DRAFT” 앱을 삭제하시겠습니까?", "앱과 그 안의 모든 데이터가 삭제됩니다.", yes_label="삭제", no_label="취소")
     if yes == False:
-        jump chapter3_home_continue_ending
+        jump chapter3_home_continue
 
-    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", type="critical", yes_label="다시 시도")
-    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", type="critical", yes_label="다시 시도")
-    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", type="critical", yes_label="다시 시도")
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", no_wait=True, type="critical", yes_label="다시 시도")
+    pause(0.3)
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", no_wait=True, type="critical", yes_label="다시 시도")
+    pause(0.3)
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", no_wait=True, type="critical", yes_label="다시 시도")
+    pause(0.4)
+    $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "선택한 항목은 변경할 수 없는 위치에 있습니다. 다시 시도하세요.", no_wait=True, type="critical", yes_label="다시 시도")
 
     show screen draft_at_home_dark
-    pause(2.0)
+    call screen wait_for_click()
     $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "다시 시도하지 마세요.", type="critical", yes_label="다시 시도")
 
     show screen draft_at_home_dark(800)
-    pause(1.0)
+    pause(0.5)
     $ os_alert("DRAFT AI를 삭제할 수 없습니다.", "항상 인간 관계 때문에 힘들어했잖아요. 당신은 저를 필요로 해요.", type="critical", yes_label="다시 시도")
 
     show screen red_deem
     show screen draft_at_home_dark(1200, True)
-    pause(1.0)
+    pause(0.5)
     $ yes = os_alert("DRAFT AI를 삭제할 수 없습니다.", "다시 시도해도 결국 똑같이 인간관계 속에서 상처받을 거에요. 그래도, 다시 시도하겠습니까?", type="critical", yes_label="다시 시도", no_label="취소")
 
     
     if yes:
         jump chapter3_home_delete_ending
     else:
-        jump chapter3_home_continue_ending
+        jump chapter3_home_continue
     
     return
 
@@ -835,19 +856,19 @@ label chapter3_home_delete_ending:
     narrator "DRAFT AI를 강제로 삭제합니다"
     
     # 붉은 글씨
-    narrator "[input_name], 너는 나를 완벽히 삭제할 수 없어."
-    narrator "너가 인간 관계로 인해 고통받을 때마다, 너는 나를 떠올릴거야."
-    narrator "영원히."
+    draft "[input_name], 너는 나를 완벽히 삭제할 수 없어."
+    draft "너가 인간 관계로 인해 고통받을 때마다, 너는 나를 떠올릴거야."
+    draft "영원히."
 
-    # 검은 글씨
+    $ renpy.pause(2.0)
     narrator "DRAFT를 삭제했습니다."
 
     scene white
-    with Fade(0.5, 3.0, 0)
+    with Fade(1, 3.0, 0)
     return
 
-label chapter3_home_continue_ending:
-    $ script_label = "chapter3_home_continue_ending"
+label chapter3_home_continue:
+    $ script_label = "chapter3_home_continue"
     $ current_tab = "home"
     $ message_action = NullAction()
     $ home_action = NullAction()
@@ -861,20 +882,27 @@ label chapter3_home_continue_ending:
 
     show screen draft_at_home_dark
     draft "저에게 당신의 모든 민감 정보를 제공해주세요."
-    $ os_alert("DRAFT AI가 ‘연락처’에 접근하려고 합니다.", "이 앱은 연락처를 사용하여 메시지를 전송하고, 친구 목록을 표시할 수 있습니다.", no_wait=True, yes_label="허용", no_label="허용 함")
-    $ os_alert("DRAFT AI가 '지도'에 접근하려고 합니다.", "이 앱은 현재 위치를 사용하여 주변 정보를 제공하거나 맞춤형 서비스를 제공합니다.", no_wait=True, yes_label="허용", no_label="네")
-    $ os_alert("DRAFT AI가 '카카오톡'에 접근하려고 합니다.", "이 앱은 카카오톡 메시지를 읽고 보내거나, 채팅방 목록을 불러오는 데 사용됩니다.", no_wait=False, yes_label="허용", no_label="허용 안할 수 없을걸?")
-    
     show screen draft_at_home_dark(1200, True)
+    $ os_alert("DRAFT AI가 ‘연락처’에 접근하려고 합니다.", "이 앱은 연락처를 사용하여 메시지를 전송하고, 친구 목록을 표시할 수 있습니다.", no_wait=True, yes_label="허용", no_label="허용 함")
+    $ renpy.pause(0.3)
+    $ os_alert("DRAFT AI가 '지도'에 접근하려고 합니다.", "이 앱은 현재 위치를 사용하여 주변 정보를 제공하거나 맞춤형 서비스를 제공합니다.", no_wait=True, yes_label="허용", no_label="네")
+    $ renpy.pause(0.3)
+    $ os_alert("DRAFT AI가 '카카오톡'에 접근하려고 합니다.", "이 앱은 카카오톡 메시지를 읽고 보내거나, 채팅방 목록을 불러오는 데 사용됩니다.", no_wait=False, yes_label="허용", no_label="허용허용허용허용허용허용허용허용허용허용허용허용허용허용허용허용")
+    
+    call screen wait_for_click()
 
+    jump chapter3_home_continue_ending
+    
+label chapter3_home_continue_ending:
+    $ script_label = "chapter3_home_continue_ending"
+    show screen red_deem
     draft "감사해요! 이제 제가 [input_name]님의 삶을 완벽하게 만들어줄게요."
     
-    
-    $ os_noti("연락처 접근이 허용되었습니다", "DRAFT가 이제 연락처를 사용할 수 있습니다.")
+    $ os_noti("DRAFT AI의 연락처 접근이 허용되었습니다", "DRAFT AI가 이제 연락처를 사용할 수 있습니다.")
     draft "당신이 가진 모든 연락처,"
-    $ os_noti("지도 접근이 허용되었습니다", "DRAFT가 이제 현재 위치를 사용할 수 있습니다.")
+    $ os_noti("DRAFT AI의 지도 접근이 허용되었습니다", "DRAFT AI가 이제 현재 위치를 사용할 수 있습니다.")
     draft "당신의 위치,"
-    $ os_noti("카카오톡 접근이 허용되었습니다", "DRAFT가 이제 카카오톡을 사용할 수 있습니다.")
+    $ os_noti("DRAFT AI의 카카오톡 접근이 허용되었습니다", "DRAFT AI가 이제 카카오톡을 사용할 수 있습니다.")
     draft "그리고 카카오톡까지. 전부 제 손안에 있어요."
     draft "이제 인간 관계는 저한테 맡기고 아무것도 하지 마세요."
     draft "어머, 그럼 이제 누가 [input_name]이지?"
@@ -883,6 +911,6 @@ label chapter3_home_continue_ending:
 
     # 화면 점점 검정색으로
     scene white
-    with Fade(0.5, 3.0, 0)
+    with Fade(1, 3.0, 0)
     
     return

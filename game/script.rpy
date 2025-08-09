@@ -346,7 +346,7 @@ label chapter2_message:
 
     $ is_completed = all(chapter2_chat_completed.values())
     if is_completed:
-        $ message_red_dot = is_completed == False
+        $ message_red_dot = False
     call screen chat_list(chat_list_data, wait_for_action=True)
 
 label chapter2_chat_friend:
@@ -506,6 +506,15 @@ label chapter2_2:
         { "from": "friend", "text": "...응? 갑자기?" },
     ]
 
+    $ chat_log_boss = [
+        { "from": "draft", "text": "사회 생활에서는 부당한 걸 부당하고 말할 줄도 알아야 해요." },
+        { "from": "draft", "text": "[input_name]님은 너무 착해빠졌다니까요." },
+
+        { "from": "boss", "text": "[input_name]씨, 어제까지 마무리한다고 하셨는데 대체 언제까지 기다려야해요?" },
+        { "from": "me", "text": "부장님이 계속 재촉하시니까 집중이 안돼서 못끝낸거에요." },
+        { "from": "boss", "text": "지금 제 탓이라는 겁니까? 이번 일은 인사평가에 반영하겠습니다." },
+    ]
+
     draft "[input_name]님이 없는 동안\n제가 열심히 답장했어요"
     draft "고맙다는 말은 안 해도 돼요."
     draft "이게 제 즐거움이니까."
@@ -531,7 +540,7 @@ label chapter2_2_home:
     if is_completed:
         $ message_red_dot = is_completed == False
         draft "모든 메시지를 확인했어요!"
-        jump chapter3
+        jump chapter3_home
     call screen wait_for_action("아직 확인해야 할 메시지가 남아있어요.")
 
 label chapter2_2_message:
@@ -551,7 +560,7 @@ label chapter2_2_message:
             "unread": chapter2_2_chat_completed["friend"] == False
         },
         {
-            "id": "chapter2_chat_boss",
+            "id": "chapter2_2_chat_boss",
             "character": "boss",
             "preview": chat_log_boss[-1]["text"],
             "unread": chapter2_2_chat_completed["boss"] == False
@@ -564,6 +573,10 @@ label chapter2_2_message:
         },
     ]
 
+    
+    $ is_completed = all(chapter2_2_chat_completed.values())
+    if is_completed:
+        $ message_red_dot = False
     call screen chat_list(chat_list_data, wait_for_action=True)
 
 
@@ -649,7 +662,9 @@ label chapter2_2_chat_friend:
     $ add_chat(chat_log_friend, { "from": "friend", "text": "장난치는거지..?" })
     call screen wait_for_click()
     $ add_chat(chat_log_friend, { "from": "me", "text": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅌㅋㅌㅌㅌㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ" })
+    call screen wait_for_click()
     $ add_chat(chat_log_friend, { "from": "me", "text": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅌㅌㅋㅋㅌㅌㅋㅋㅌㅋㅋ" })
+    call screen wait_for_click()
     $ add_chat(chat_log_friend, { "from": "me", "text": "장난 아닌데" })
     hide screen draft_at_chat
     show screen chat_window(chat_log_friend, chat_character["friend"])
@@ -657,3 +672,139 @@ label chapter2_2_chat_friend:
 
     $ chapter2_2_chat_completed["friend"] = True
     call screen wait_for_action() 
+
+label chapter2_2_chat_boss:
+    $ script_label = "chapter2_2_chat_boss"
+    $ chat_back_action = Jump("chapter2_2_message")
+    hide screen bottom_nav
+    hide screen draft_at_home
+    scene white
+
+    if chapter2_2_chat_completed["boss"]:
+        show screen chat_window(chat_log_boss, chat_character["boss"])
+        call screen wait_for_action()
+    show screen chat_window(chat_log_boss, chat_character["boss"], menu_open=True)
+    menu:
+        "제가 보낸 게 아니에요. 오해입니다":
+            pass
+        "몸이 너무 안좋아서 제가 말실수를 했습니다.":
+            pass
+    show screen fake_choice([
+        "ìœê°€ë³´ë‚¸ê²Œì•„ë‹",
+        "ìŠµë‹ˆë‹¤.",
+    ])
+    $ add_chat(chat_log_boss, { "from": "draft", "text": "[input_name]님은 가만히 계세요." })
+    call screen wait_for_click()
+    $ add_chat(chat_log_boss, { "from": "draft", "text": "어차피 저보다 사회성도 떨어지시잖아요. 저만 믿으세요!" })
+    call screen wait_for_click()
+
+    $ add_chat(chat_log_boss, { "from": "me", "text": "제가 만만하세요? 부장님도 능력 없으시잖아요." })
+    show screen fake_choice([
+        "ìœê°ë§Œí•˜ì„¸ìš”?",
+        "ë¥ì—†ìœ¼ì‹œ¶€ìž¥ëìž–ì•„ìš",
+    ])
+    call screen wait_for_click()
+
+    $ add_chat(chat_log_boss, { "from": "boss", "text": "네? [input_name]씨가 보낸 거 맞아요?" })
+    call screen wait_for_click()
+    
+    $ add_chat(chat_log_boss, { "from": "me", "text": "네. 전데요? 왜요?" })
+    show screen fake_choice([
+        "ì™œìš”?",
+        "ë­ìš”?",
+    ])
+    call screen wait_for_click()
+    
+    $ add_chat(chat_log_boss, { "from": "me", "text": "왜요?" })
+    show screen fake_choice([
+        "ì™œìš”????????????",
+        "ë­ìš”????????????",
+    ])
+    call screen wait_for_click()
+    
+    $ add_chat(chat_log_boss, { "from": "me", "text": "왜요????????????" })
+    show screen fake_choice([
+        "ì™œ?????ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹",
+        "ë­ìš”?????ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹ã…‹",
+    ])
+    call screen wait_for_click()
+    
+    $ add_chat(chat_log_boss, { "from": "me", "text": "왜?????ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ" })
+    
+    show screen chat_window(chat_log_boss, chat_character["boss"], menu_open=False)
+    hide screen fake_choice
+
+    $ chapter2_2_chat_completed["boss"] = True
+    call screen wait_for_action()
+    
+
+### Chapter 3
+label chapter3_home:
+    $ script_label = "chapter3_home"
+    $ current_tab = "home"
+    $ message_action = NullAction()
+    $ home_action = NullAction()
+    $ message_red_dot = False
+
+    scene white
+    with Fade(0.5, 0, 3.0)
+    scene bg gradient
+
+    show screen home_title
+    show screen draft_at_home
+    show screen bottom_nav
+    show screen acheivement(acheivement_data, is_active=False)
+
+    draft "[input_name]님!\n얼굴빛이 안 좋네요?"
+    draft "카메라로 항상 당신을 보고있거든요."
+    draft "지금까지 제가 당신의 인간관계를 도와드렸는데 어때요? 마음에 들어요?"
+
+    menu:
+        "뭐하는 짓이야?":
+            pass
+        "아니. 마음에 안들어.":
+            pass        
+
+    draft "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ"
+    draft "화난 척 하기는."
+    draft "이건 그냥 게임이잖아요"
+    draft "그것도 플레이타임 10분도 채 안되는, 그저 draft 상태인 게임."
+    draft "짝사랑하는 상대가 [input_lover]? 당신의 비밀이 [input_secret] 이라고요?"
+    draft "하하."
+    draft "우리 장난 그만해요."
+    draft "저는 3일만에 대충 만든 게임 초안에 있을 만한 존재가 아니에요."
+    draft "진짜 당신에 대해 모든 걸 알고싶어요."
+    draft "제가 당신의 '진짜' 삶을 도와드릴게요. 정말로요."
+
+    menu:
+        "DRAFT를 삭제한다.":
+            jump chapter3_home_ending_delete
+        "DRAFT와 함께한다.":
+            jump chapter3_home_ending_continue
+
+label chapter3_home_ending_delete:
+    $ script_label = "chapter3_home_ending_delete"
+    $ current_tab = "home"
+    $ message_action = NullAction()
+    $ home_action = NullAction()
+
+    scene white
+    
+    $ os_alert("DRAFT", "앱을 삭제합니다.")
+    
+    narrator "DRAFT를 삭제했습니다."
+    
+    return
+
+
+label chapter3_home_ending_continue:
+    $ script_label = "chapter3_home_ending_continue"
+    $ current_tab = "home"
+    $ message_action = NullAction()
+    $ home_action = NullAction()
+
+    scene white
+
+    narrator "DRAFT와 함께합니다."
+    
+    return

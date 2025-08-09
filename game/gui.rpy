@@ -489,3 +489,6 @@ style fw_semibold is default:
 
 style fw_thin is default:
     font "fonts/Pretendard-Regular.ttf"
+
+style fw_default is default:
+    font "fonts/Pretendard-Medium.ttf"

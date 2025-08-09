@@ -102,7 +102,7 @@ screen say(who, what):
             xalign 0.5
             yalign 0.5
             xmaximum 0.8
-            ysize 100
+            ysize 120
             background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
             text what id "what" xalign 0.5 yalign 0.5
             
@@ -113,7 +113,7 @@ screen say(who, what):
             xalign 0.1
             yalign gui.textbox_yalign
             xsize 400
-            padding (30, 0)
+            padding (20, 0)
             background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
             text what id "what" textalign 0.0 yalign 0.5 xalign 0
 
@@ -128,7 +128,7 @@ style draft_window is default:
     yalign gui.textbox_yalign
     ysize gui.textbox_height
     xsize 400
-    padding (30, 0)
+    padding (20, 0)
     background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
 
 style draft_window_text is default:
@@ -1681,15 +1681,19 @@ screen wait_for_click():
     add Solid("#00000000", xsize=config.screen_width, ysize=config.screen_height)  # 완전 투명 배경
     key "mouseup_1" action Return()
 
-            
-
 screen bottom_nav():
     zorder 100
+    frame:
+        xfill True
+        ysize 1
+        yalign 1.0
+        yoffset -120
+        background Solid("#e1e1e1")
     frame:
         xalign 0.5
         yalign 1.0
         ysize 120
-        background "#dddddd"
+        background "#ffffff"
         padding (10, 10, 10, 10)
 
         hbox:
@@ -1697,48 +1701,52 @@ screen bottom_nav():
             xfill True
             xalign 0.5
             yalign 0.5
-
             null width 1
             # Home (활성)
-            vbox:
-                text "🏠":
-                    xalign 0.5
-                textbutton "Home":
-                    text_size 26
-                    text_font "fonts/Pretendard-SemiBold.ttf"
-                    action home_action
-                    if current_tab == "home":
-                        text_color gui.accent_color
+            button:
+                action home_action
+                vbox:
+                    text "🏠" xalign 0.5
+                    text "Home":
+                        size 26
+                        style "fw_semibold"
+                        if current_tab == "home":
+                            color gui.accent_color
             null width 1
-            vbox:
-                text "✉️":
-                    xalign 0.5
-                textbutton "Message":
-                    text_size 26
-                    text_font "fonts/Pretendard-SemiBold.ttf"
-                    action message_action
-                    if current_tab == "message":
-                        text_color gui.accent_color
-                        
-            null width 1
+            button:
+                action message_action
+                vbox:
+                    if message_red_dot:
+                        add "gui/message_red_dot.png" xsize 48 ysize 44 xalign 0.5 yalign 0.0
+                    else:
+                        text "✉️" xalign 0.5
+                    text "Message":
+                        size 26
+                        if message_red_dot:
+                            yoffset -4
+                        style "fw_semibold"
+                        if current_tab == "message":
+                            color gui.accent_color
             # Help (비활성)
-            vbox:
-                text "❓":
-                    xalign 0.5
-                textbutton "Help":
-                    text_size 26
-                    text_font "fonts/Pretendard-SemiBold.ttf"
-                    action NullAction()
-
             null width 1
+            button:
+                action NullAction()
+                vbox:
+                    text "❓" xalign 0.5
+                    text "Help":
+                        size 26
+                        style "fw_semibold"
+
             # News (비활성)
-            vbox:
-                text "📢":
-                    xalign 0.5
-                textbutton "News":
-                    text_size 26
-                    text_font "fonts/Pretendard-SemiBold.ttf"
-                    action NullAction()
+            null width 1
+            button:
+                action NullAction()
+                vbox:
+                    text "📢" xalign 0.5
+                    text "News":
+                        size 26
+                        style "fw_semibold"
+            null width 1
 
 screen home_title():
     tag home_title
@@ -1797,7 +1805,11 @@ screen chat_list(chat_items, wait_for_click=False, wait_for_action=False):
                         vbox:
                             spacing 0
                             text chat_character[item["character"]]["name"] size 28 color "#757575"
-                            text item["preview"] size 33 
+
+                            if item["unread"] == True:
+                                text item["preview"] size 28 color "#000" style "fw_bold"
+                            else:
+                                text item["preview"] size 28 color "#757575"
 
 
     if wait_for_click:

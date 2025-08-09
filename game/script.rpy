@@ -13,10 +13,11 @@ default current_tab = "none"
 default home_action = NullAction()
 default message_action = NullAction()
 default chat_back_action = NullAction()
+default message_red_dot = True
 
 label start:
     $ script_label = "start"
-    # jump onboarding_home    # @DEBUG
+    jump onboarding_home    # @DEBUG
 
     scene white
     with dissolve
@@ -35,11 +36,27 @@ label start:
     narrator "하지만 당신의 진짜 이름과 다르네요?"
     narrator "장난이에요."
 
+define chat_character = {
+    "draft": {
+        "name": "Draft AI",
+        "avatar": "gui/avatar_draft.png"
+    },
+    "mom": {
+        "name": "엄마",
+        "avatar": "gui/avatar_mom.png"
+    },
+}
 
+default onboarding_chat_mom_log = [
+    { "from": "me", "text": "나 용돈좀." }, 
+    { "from": "mom", "text": "밥은 먹었니?" }, 
+    { "from": "mom", "text": "문자는 왜 안 보냈어?" }
+]
 
 default onboarding_chat_completed = {
     "mom": False
 }
+
 label onboarding_home:
     $ script_label = "onboarding_home"
     $ current_tab = "home"
@@ -61,51 +78,32 @@ label onboarding_home:
 
 
 
-define chat_character = {
-    "draft": {
-        "name": "Draft AI",
-        "avatar": "gui/avatar_draft.png"
-    },
-    "mom": {
-        "name": "엄마",
-        "avatar": "gui/avatar_mom.png"
-    },
-    "strange": {
-        "name": "???",
-        "avatar": "gui/avatar_unknown.png"
-    }
-}
-
 label onboarding_message:
     $ script_label = "onboarding_message"
     $ current_tab = "message"
     $ message_action = NullAction()
     $ home_action = Jump("onboarding_home")
 
-    $ chat_list_data = [
-        {
-            "id": "onboarding_chat_mom",
-            "character": "mom",
-            "preview": "오늘 점심 뭐 먹었니?",
-        },
-        {
-            "id": "onboarding_chat_strange",
-            "character": "strange",
-            "preview": "이 메시지를 본다면 바로 연락해.",
-        }
-    ]
-
     scene white
     hide screen draft_at_home
     show screen bottom_nav
 
+    $ chat_list_data = [
+        {
+            "id": "onboarding_chat_mom",
+            "character": "mom",
+            "preview": onboarding_chat_mom_log[-1]["text"],
+            "unread": onboarding_chat_completed["mom"] == False
+        },
+    ]
+
     $ is_completed = all(onboarding_chat_completed.values())
+    $ message_red_dot = is_completed != True
     call screen chat_list(chat_list_data, wait_for_action=is_completed)
 
     jump onboarding_home
 
 
-default onboarding_chat_mom_log = []
 label onboarding_chat_mom:
     $ script_label = "onboarding_chat_mom"
     $ current_tab = "chat"
@@ -117,12 +115,6 @@ label onboarding_chat_mom:
     if onboarding_chat_completed["mom"]:
         show screen chat_window(onboarding_chat_mom_log, chat_character["mom"])
         call screen wait_for_action()
-
-    $ onboarding_chat_mom_log = [
-        { "from": "me", "text": "나 용돈좀." }, 
-        { "from": "mom", "text": "밥은 먹었니?" }, 
-        { "from": "mom", "text": "문자는 왜 안 보냈어?" }
-    ]
     
     show screen chat_window(onboarding_chat_mom_log, chat_character["mom"], menu_open=True)
     menu():
@@ -150,6 +142,9 @@ default acheivement_data = {
 label chapter2:
     $ script_label = "chapter2"
     $ current_tab = "home"
+    $ message_action = NullAction()
+    $ home_action = NullAction()
+    $ message_red_dot = True
 
     scene white
     with Fade(0.5, 0, 3.0)
@@ -167,6 +162,7 @@ label chapter2_home:
     $ current_tab = "home"
     $ message_action = Jump("chapter2_message")
     $ home_action = NullAction()
+
     scene bg gradient
 
     show screen acheivement(acheivement_data)
@@ -184,17 +180,14 @@ label chapter2_message:
 
     $ chat_list_data = [
         {
-            "id": "chapter2_chat_strange",
-            "character": "strange",
-            "preview": "이 메시지를 본다면 바로 연락해.",
-        },
-        {
             "id": "chapter2_chat_mom",
             "character": "mom",
             "preview": "오늘 점심 뭐 먹었니?",
+            "unread": True
         }
     ]
-
+    # is completed 확인    
+    # red dot
     scene white
 
     call screen chat_list(chat_list_data, wait_for_action=False)

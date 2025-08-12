@@ -20,9 +20,9 @@ init python:
     import os
     import subprocess
 
-    def os_noti(title, message):
+    def os_noti(title, subtitle, message):
         if platform.system() == "Darwin":
-            return macos_noti(title, message)
+            return macos_noti(title, subtitle, message)
         elif platform.system() == "Windows":
             return None
         
@@ -32,9 +32,15 @@ init python:
         elif platform.system() == "Windows":
             return None
 
-    def macos_noti(title, message):
+    def macos_noti(title, subtitle=None, message=None):
+        script = [
+            "osascript", "-e",
+            f'display notification "{message}" with title "{title}"' +
+            (f' subtitle "{subtitle}"' if subtitle else "") +
+            f' sound name "Glass"'
+        ]
         try:
-            subprocess.run(["osascript", "-e", f'display notification "{message}" with title "{title}" sound name "Glass"'])
+            subprocess.run(script)
         except subprocess.CalledProcessError as e:
             print("Error displaying notification:", e)
             return None
@@ -44,6 +50,9 @@ init python:
         script = f'''
         display alert "{title}" message "{message}" as {type} buttons {buttons} default button "{yes_label}"
         '''
+        
+        # 사운드 재생
+        renpy.music.play("audio/alert.wav", channel='sound', loop=False, synchro_start=False)
         try:
             if no_wait:
                 # 비동기 처리

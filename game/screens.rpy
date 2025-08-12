@@ -1688,8 +1688,6 @@ style slider_slider:
     xsize 900
 
 screen wait_for_action(what=None):
-    # Define screen elements and their actions
-    $ script_label = "wait_for_action"
     textbutton "" action Return()
 
     if what:
@@ -1697,9 +1695,15 @@ screen wait_for_action(what=None):
             style "draft_window"
             text what style "draft_window_text"
 
-screen wait_for_click():
+screen wait_for_click(what=None):
     add Solid("#00000000", xsize=config.screen_width, ysize=config.screen_height)  # 완전 투명 배경
     key "mouseup_1" action Return()
+    
+screen fake_draft_textbox(what):
+    key "mouseup_1" action Return()
+    frame: 
+        style "draft_window"
+        text what style "draft_window_text"
 
 screen bottom_nav():
     zorder 100
@@ -1915,7 +1919,7 @@ screen chat_window(chat_log, ch, menu_open=False):
                 xfill True
 
                 for msg in chat_log:
-                    use chat_bubble(msg, ch)
+                    use chat_bubble(msg)
                 
                 frame: # 하단 여백
                     background None
@@ -1931,7 +1935,7 @@ screen chat_window(chat_log, ch, menu_open=False):
         if menu_open: 
             yoffset -300
                     
-screen chat_bubble(msg, ch):
+screen chat_bubble(msg):
     frame:
         if msg["from"] == "me":
             xalign 1.0
@@ -1941,7 +1945,7 @@ screen chat_bubble(msg, ch):
         hbox:
             spacing 16
             if msg["from"] != "me":
-                add ch["avatar"]:
+                add chat_character[msg["from"]]["avatar"]:
                     xsize 48
                     ysize 48
                     yalign 0.5

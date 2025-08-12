@@ -66,13 +66,13 @@ define gui.name_text_font = "fonts/Pretendard-Medium.ttf"
 define gui.interface_text_font = "fonts/Pretendard-Medium.ttf"
 
 ## The size of normal dialogue text.
-define gui.text_size = 33
+define gui.text_size = 36
 
 ## The size of character names.
-define gui.name_text_size = 33
+define gui.name_text_size = 36
 
 ## The size of text in the game's user interface.
-define gui.interface_text_size = 33
+define gui.interface_text_size = 36
 
 ## The size of labels in the game's user interface.
 define gui.label_text_size = 36
@@ -476,7 +476,7 @@ init python:
         # gui.nvl_button_width = 1860
         # gui.nvl_button_xpos = 30
 
-define gui.textbox_height = 180 # 기본은 240~300 정도
+define gui.textbox_height = 220 # 기본은 240~300 정도
 define gui.textbox_yalign = 0.8 # 맨 아래 정렬
 define gui.text_padding = 24
 define gui.name_xpos = 0.05         # 이름 위치 조정 (왼쪽)

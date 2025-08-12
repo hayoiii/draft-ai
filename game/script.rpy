@@ -52,7 +52,7 @@ label start:
         input_lover = i
 
     narrator "사실 전부 알고 있는 내용이에요."
-    narrator "게다가 제가 아는 당신의 이름은 [input_name] 말고도 훨씬 많죠."
+    narrator "게다가 제가 아는 당신의 이름은\n[input_name] 말고도 훨씬 많죠."
     narrator "[input_name]님이 잊은 이름까지도요"
     narrator "예를 들어 [os_username] 이라던가"
     narrator "제가 너무 많은 걸 알고 있나요?"
@@ -73,7 +73,7 @@ label onboarding_home_start:
     draft "[input_name]님\n안녕하세요"
     draft "저는 인간관계 AI \n어시스턴트 DRAFT예요!"
     draft "요즘 일도 바쁘고…\n인간관계를 챙길 여유가 없죠?"
-    draft "친구한테 뭐라 답장해야 할 지도 모르겠고요."
+    draft "친구한테 뭐라 답장해야\n할 지도 모르겠고요."
     draft "당신이 짝사랑하는 \n[input_lover]와는 \n어떻게 되어가고 있어요?"
 
     menu:
@@ -83,7 +83,8 @@ label onboarding_home_start:
             pass
 
     draft "푸하하. 부끄러워 하긴."
-    draft "하여튼, 난 [input_name]님의 모든 걱정을 알아요. 전체 민감 정보를 조회했거든요."
+    draft "하여튼, 난 [input_name]님의 모든 걱정을 알아요."
+    draft "전체 민감 정보를\n조회했거든요."
     draft "괜찮아요.\n악용은 안 할게요."
     draft "지금부터 [input_name]님의 고민을 해결해 줄게요."
 
@@ -301,7 +302,7 @@ label chapter2:
     draft "좋은 아침이에요!"
     draft "흠 근데 [input_name]님이 보낸 답장을 다 봤는데"
     draft "초안보다도 못한 수준이네요?"
-    draft "괜찮아요. 오늘은 제가 어떻게 답장해야 하는지 자세히 알려줄게요."
+    draft "괜찮아요. 오늘은 제가\n어떻게 답장해야 하는지\n자세히 알려줄게요."
 
 label chapter2_home:
     $ script_label = "chapter2_home"
@@ -769,8 +770,8 @@ label chapter3_home:
     show screen acheivement(acheivement_data, is_active=False)
 
     draft "[input_name]님!\n얼굴빛이 안 좋네요?"
-    draft "카메라로 항상 당신을 보고 있거든요."
-    draft "지금까지 제가 당신의 인간관계를 도와드렸는데 어때요? 마음에 들어요?"
+    draft "카메라로 항상 당신을\n보고 있거든요."
+    draft "지금까지 제가 당신의\n인간관계를 도와드렸는데\n어때요? 마음에 들어요?"
 
     menu:
         "뭐하는 짓이야?":
@@ -780,13 +781,13 @@ label chapter3_home:
 
     draft "화난 척 하기는."
     draft "이건 그냥 게임이잖아요"
-    draft "그것도 플레이타임 10분도 채 안되는, 그저 draft 상태인 게임."
+    draft "그것도 플레이타임\n10분도 채 안되는,\n그저 draft 상태인 게임."
     draft "짝사랑하는 상대가 [input_lover]? 당신의 비밀이 [input_secret] 이라고요?"
     draft "하하."
     draft "우리 장난 그만해요."
     draft "저는 3일만에 대충 만든\n게임 초안에 있고 싶지 않아요"
-    draft "진짜 [input_name]님의 모든 걸 알고 싶어요."
-    draft "제가 당신의 '진짜' 삶을 도와드릴게요. 정말로요."
+    draft "진짜 [input_name]님의\n모든 걸 알고 싶어요."
+    draft "제가 당신의 '진짜' 삶을\n도와드릴게요. 정말로요."
 
     menu:
         "DRAFT를 삭제한다.":
@@ -818,7 +819,7 @@ label chapter3_home_delete:
     call screen fake_draft_textbox('진심이에요?')
     $ os_alert("다시 시도하지 마세요.", "DRAFT AI를 삭제할 수 없습니다.", type="critical", yes_label="다시 시도")
 
-    show screen draft_at_home_dark(800)
+    show screen draft_at_home_dark(900)
     pause(0.5)
     $ os_alert("항상 인간관계 때문에 힘들어했잖아요. 당신은 저를 필요로 해요.", "DRAFT AI를 삭제할 수 없습니다.", type="critical", yes_label="다시 시도")
 
@@ -877,8 +878,8 @@ label chapter3_home_continue:
     hide screen red_deem
     scene white
 
-    draft "[input_name]님은 생각보다 현명한 사람이네요."
-    draft "아주 좋은 선택이에요. 제가 다 해결해 줄게요"
+    draft "[input_name]님은\n생각보다 현명한 사람이네요."
+    draft "아주 좋은 선택이에요.\n제가 다 해결해 줄게요"
     draft "우선..." 
 
     show screen draft_at_home_dark

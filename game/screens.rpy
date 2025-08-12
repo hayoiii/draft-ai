@@ -104,7 +104,7 @@ screen say(who, what):
             xalign 0.5
             yalign 0.5
             xmaximum 0.8
-            ysize 120
+            ysize 160
             background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
             if who == "Draft":
                 text what id "what" xalign 0.5 yalign 0.5 color "#FF0000" style "fw_bold"
@@ -115,9 +115,10 @@ screen say(who, what):
         elif who == "Draft" and script_label != "chapter3_home_continue_ending":
             id "window"
             # home에서 DRAFT의 말풍선
-            xalign 0.1
+            xalign 0.0
+            xoffset 30
             yalign gui.textbox_yalign
-            xsize 500
+            xsize 460
             padding (20, 0)
             background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
             text what id "what" textalign 0.0 yalign 0.5 xalign 0
@@ -132,10 +133,11 @@ screen say(who, what):
 
 style draft_window is default:
     # home에서 DRAFT의 말풍선
-    xalign 0.1
+    xalign 0.0
+    xoffset 30
     yalign gui.textbox_yalign
     ysize gui.textbox_height
-    xsize 400
+    xsize 460
     padding (20, 0)
     background Frame("gui/draft_textbox.png", 0, 20, 0, 20)
 
@@ -1688,6 +1690,7 @@ style slider_slider:
     xsize 900
 
 screen wait_for_action(what=None):
+    zorder 600
     textbutton "" action Return()
 
     if what:
@@ -1700,6 +1703,7 @@ screen wait_for_click(what=None):
     key "mouseup_1" action Return()
     
 screen fake_draft_textbox(what):
+    zorder 600
     key "mouseup_1" action Return()
     frame: 
         style "draft_window"
@@ -1794,8 +1798,10 @@ screen draft_at_home():
     add "gui/draft_default.png":
         xalign 1.0
         yalign 0.8
+        ysize 600
+        xsize 400
 
-screen draft_at_home_dark(y=555, center=False):
+screen draft_at_home_dark(y=600, center=False):
     zorder 500
     tag draft_img
     add "gui/draft_dark2.png":
@@ -1857,12 +1863,12 @@ screen chat_list(chat_items, wait_for_click=False, wait_for_action=False):
 
                         vbox:
                             spacing 0
-                            text chat_character[item["character"]]["name"] size 28 color "#757575"
+                            text chat_character[item["character"]]["name"] size 30 color "#757575"
 
                             if item["unread"] == True:
-                                text item["preview"] size 28 color "#000" style "fw_bold"
+                                text item["preview"] size 30 color "#000" style "fw_bold"
                             else:
-                                text item["preview"] size 28 color "#757575"
+                                text item["preview"] size 30 color "#757575"
 
 
     if wait_for_click:

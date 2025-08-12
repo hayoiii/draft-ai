@@ -445,7 +445,7 @@ label chapter2_chat_lover_step:
     call screen wait_for_click()
     $ add_chat(chat_log_lover, { "from": "draft", "text": "약속이 있어서 안된다고 하세요." })
     
-    call chapter2_chat_lover_step_menu
+    call chapter2_chat_lover_step_menu from _call_chapter2_chat_lover_step_menu
     show screen chat_window(chat_log_lover, chat_character["lover"], menu_open=False)
 
     call screen wait_for_click()
